@@ -11,7 +11,7 @@ class Preference(models.Model):
     user_id = models.OneToOneField(User, on_delete=models.CASCADE, related_name="preference")
     fuel_type = models.ManyToManyField(FuelType, blank=True, null=True)
     transmission = models.CharField(max_length=50, blank=True)
-    model = models.ManyToManyField('car.CarModel', blank=True, null=True)
+    model = models.ManyToManyField(CarModel, blank=True, null=True)
     brand = models.ManyToManyField(CarBrand, blank=True, null=True)
     year_min = models.IntegerField(blank=True, null=True)
     year_max = models.IntegerField(blank=True, null=True)

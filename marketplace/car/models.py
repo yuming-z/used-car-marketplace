@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 class CarBrand(models.Model):
     name = models.CharField(max_length=50)
 
-class ModelBrand(models.Model):
+class CarModel(models.Model):
     name = models.CharField(max_length=50)
     brand = models.ForeignKey(CarBrand, on_delete=models.CASCADE, related_name="models")
 
@@ -13,7 +13,7 @@ class FuelType(models.Model):
 
 class Car(models.Model):
     year = models.IntegerField()
-    model = models.ForeignKey(ModelBrand, on_delete=models.CASCADE, related_name="cars")
+    model = models.ForeignKey(CarModel, on_delete=models.CASCADE, related_name="cars")
     registration_no = models.CharField(max_length=50)
     status = models.CharField(max_length=50)
     description = models.TextField()
