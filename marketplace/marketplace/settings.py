@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     # Custom apps
     'user.apps.UserConfig',
+    'car.apps.CarConfig',
 ]
 
 MIDDLEWARE = [
