@@ -125,6 +125,16 @@ class Preferred_Price_Range(models.Model):
 
     def __str__(self) -> str:
         return "From " + str(self.price_min) + " to " + str(self.price_max) + "."
+    
+class Preferred_Odometer_Range(models.Model):
+    '''
+    The model to store the preferred odometer range for a user on the cars.
+    '''
+    odometer_min = models.IntegerField()
+    odometer_max = models.IntegerField()
+
+    def __str__(self) -> str:
+        return "From " + str(self.odometer_min) + " to " + str(self.odometer_max) + "."
 
 class Preference(models.Model):
     '''
@@ -133,8 +143,7 @@ class Preference(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="preference", primary_key=True)
     year_range = models.ForeignKey(Preferred_Year_Range, on_delete=models.CASCADE, related_name="preferences", blank=True, null=True)
     price_range = models.ForeignKey(Preferred_Price_Range, on_delete=models.CASCADE, related_name="preferences", blank=True, null=True)
-    odometer_min = models.IntegerField(blank=True, null=True)
-    odometer_max = models.IntegerField(blank=True, null=True)
+    odometer_range = models.ForeignKey(Preferred_Odometer_Range, on_delete=models.CASCADE, related_name="preferences", blank=True, null=True)
     fuel = models.ManyToManyField(Fuel_Type, related_name="preferences", blank=True, null=True)
     transmission = models.ManyToManyField(Transmission_Type, related_name="preferences", blank=True, null=True)
     model = models.ManyToManyField(Car_Model, related_name="preferences", blank=True, null=True)
