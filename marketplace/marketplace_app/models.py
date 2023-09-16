@@ -106,13 +106,19 @@ class Order(models.Model):
         if self.seller == self.buyer:
             raise ValidationError("The buyer and seller cannot be the same person.")
 
+class Preferred_Year_Range(models.Model):
+    '''
+    The model to store the preferred year range for a user on the cars.
+    '''
+    year_min = models.IntegerField(max_length=4)
+    year_max = models.IntegerField(max_length=4)
+
 class Preference(models.Model):
     '''
     The model to store the preference of a user.
     '''
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="preference", primary_key=True)
-    year_min = models.IntegerField(max_length=4, blank=True, null=True)
-    year_max = models.IntegerField(max_length=4, blank=True, null=True)
+    year_range = models.ForeignKey(Preferred_Year_Range, on_delete=models.CASCADE, related_name="preferences", blank=True, null=True)
     price_min = models.FloatField(blank=True, null=True)
     price_max = models.FloatField(blank=True, null=True)
     odometer_min = models.IntegerField(blank=True, null=True)
