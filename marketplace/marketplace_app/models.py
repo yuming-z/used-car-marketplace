@@ -113,6 +113,9 @@ class Preferred_Year_Range(models.Model):
     year_min = models.IntegerField(max_length=4)
     year_max = models.IntegerField(max_length=4)
 
+    def __str__(self) -> str:
+        return "From " + str(self.year_min) + " to " + str(self.year_max) + "."
+
 class Preference(models.Model):
     '''
     The model to store the preference of a user.
