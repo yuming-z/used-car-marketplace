@@ -2,6 +2,14 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
+class User_Detail(models.Model):
+    '''
+    The model to store user details.
+    It stores any extra fields about the user other the fields defined in the build-in user model.
+    '''
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user_detail", primary_key=True)
+    mobile = models.IntegerField(max_length=10, blank=True, null=True) # assume Asutralian mobile number without country code
+
 class Fuel_Type(models.Model):
     '''
     The model to store fuel types.
@@ -68,7 +76,7 @@ class Car(models.Model):
     fuel_type = models.ForeignKey(Fuel_Type, on_delete=models.CASCADE, related_name="cars")
     transmission = models.ManyToManyField(Transmission_Type, related_name="cars")
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="cars")
-    prev_owner_count = models.IntegerField(default=0)
+    prev_owner_count = models.IntegerField(default=1)
     location = models.CharField(max_length=100)
 
 class Car_File(models.Model):
@@ -172,8 +180,8 @@ class Seller_Rating(models.Model):
         (5, "Very good"),
     ]
 
-    seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name="seller ratings")
-    buyer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="seller ratings")
+    seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name="seller_ratings")
+    buyer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="seller_ratings")
     rating = models.IntegerField(choices=RATING)
     comment = models.TextField(blank=True)
 
@@ -196,8 +204,8 @@ class Buyer_Rating(models.Model):
         (5, "Very good"),
     ]
 
-    buyer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="buyer ratings")
-    seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name="buyer ratings")
+    buyer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="buyer_ratings")
+    seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name="buyer_ratings")
     rating = models.IntegerField(choices=RATING)
     comment = models.TextField(blank=True)
 
