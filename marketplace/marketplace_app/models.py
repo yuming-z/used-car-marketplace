@@ -52,10 +52,10 @@ class Car(models.Model):
     The model to store car information.
     '''
     CAR_STATUS = [
-        ("OK", "The registration number is valid."),
-        ("SUSPENDED", "The registration number is suspended."),
-        ("CANCELLED", "The registration number is cancelled."),
-        ("STOLEN", "The car is stolen."),
+        ("AVAILABLE", "The car is available for sale."),
+        ("PENDING", "The car is pending for sale."),
+        ("SOLD", "The car is sold."),
+        ("UNAVAILABLE", "The car is not available for sale."),
     ]
 
     CAR_CONDITION = [ # the standard from Kelly's Blue Book
@@ -68,7 +68,7 @@ class Car(models.Model):
     year = models.IntegerField(max_length=4)
     model = models.ForeignKey(Car_Model, on_delete=models.CASCADE, related_name="cars")
     registration_number = models.CharField(max_length=6)
-    status = models.CharField(max_length=9, choices=CAR_STATUS)
+    status = models.CharField(max_length=11, choices=CAR_STATUS)
     description = models.TextField()
     odometer = models.IntegerField()
     price = models.FloatField()
