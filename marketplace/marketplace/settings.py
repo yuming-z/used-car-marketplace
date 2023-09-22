@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # customised app
-    'marketplace.apps.MarketplaceConfig',
+    'marketplace_app.apps.MarketplaceAppConfig',
 ]
 
 MIDDLEWARE = [
