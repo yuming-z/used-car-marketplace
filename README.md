@@ -10,8 +10,6 @@
 
 ## How to run the application
 
-### Installation
-
 ### Step 1: Environment Setup
 
 The program can be executed in either of the environments:
