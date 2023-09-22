@@ -8,7 +8,23 @@ class User_Detail(models.Model):
     It stores any extra fields about the user other the fields defined in the build-in user model.
     '''
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user_detail", primary_key=True)
-    mobile = models.IntegerField(max_length=10, blank=True, null=True) # assume Asutralian mobile number without country code
+    mobile = models.IntegerField(blank=True, null=True)
+
+    def clean(self) -> None:
+        '''
+        The function to check if the mobile number is valid.
+        Assume Australian mobile number without country code.
+        '''
+        if (self.mobile is not None) and (self.mobile != ""):
+
+            mobile_string = str(self.mobile)
+
+            if len(mobile_string) != 10:
+                raise ValidationError("The mobile number should have 10 numbers.")
+            
+            if not mobile_string.startswith("04"):
+                # ref: https://www.australia.gov.au/telephone-country-and-area-codes
+                raise ValidationError("The mobile number is invalid.")
 
 class Fuel_Type(models.Model):
     '''
@@ -65,7 +81,7 @@ class Car(models.Model):
         ("POOR", "The vehicle has significant cosmetic defects and is in need of mechanical repairs."),
     ]
 
-    year = models.IntegerField(max_length=4)
+    year = models.IntegerField()
     model = models.ForeignKey(Car_Model, on_delete=models.CASCADE, related_name="cars")
     registration_number = models.CharField(max_length=6)
     status = models.CharField(max_length=11, choices=CAR_STATUS)
@@ -78,6 +94,14 @@ class Car(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="cars")
     prev_owner_count = models.IntegerField(default=1)
     location = models.CharField(max_length=100)
+
+    def clean(self) -> None:
+        '''
+        Field validation
+        '''
+        # check if the year consists of 4 digits
+        if len(str(self.year)) != 4:
+            raise ValidationError("The year should have 4 digits.")
 
 class Car_File(models.Model):
     '''
@@ -118,11 +142,27 @@ class Preferred_Year_Range(models.Model):
     '''
     The model to store the preferred year range for a user on the cars.
     '''
-    year_min = models.IntegerField(max_length=4)
-    year_max = models.IntegerField(max_length=4)
+    year_min = models.IntegerField()
+    year_max = models.IntegerField()
 
     def __str__(self) -> str:
         return "From " + str(self.year_min) + " to " + str(self.year_max) + "."
+    
+    def clean(self) -> None:
+        '''
+        Field validation
+        '''
+        # check if the year consists of 4 digits
+        if len(str(self.year_min)) != 4:
+            raise ValidationError("The minimum year should have 4 digits.")
+        
+        if len(str(self.year_max)) != 4:
+            raise ValidationError("The maximum year should have 4 digits.")
+
+        # check if min year is less than max year
+        if (self.year_min > self.year_max):
+            raise ValidationError("The minimum year cannot be greater than the maximum year.")
+        
     
 class Preferred_Price_Range(models.Model):
     '''
