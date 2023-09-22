@@ -72,7 +72,7 @@ class Car(models.Model):
     description = models.TextField()
     odometer = models.IntegerField()
     price = models.FloatField()
-    condition = models.CharField(max_length=8, choices=CAR_CONDITION)
+    condition = models.CharField(max_length=9, choices=CAR_CONDITION)
     fuel_type = models.ForeignKey(Fuel_Type, on_delete=models.CASCADE, related_name="cars")
     transmission = models.ManyToManyField(Transmission_Type, related_name="cars")
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="cars")
@@ -102,8 +102,8 @@ class Order(models.Model):
         ("COMPLETED", "The order is completed."),
     ]
 
-    seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name="orders")
-    buyer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="orders")
+    seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name= "sales_orders")
+    buyer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="purchase_orders")
     car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name="orders")
     status = models.CharField(max_length=9, choices=ORDER_STATUS)
 
@@ -206,8 +206,8 @@ class Buyer_Rating(Rating):
     The model to store the buyer rating information.
     '''
 
-    buyer = models.ForeignKey(User, on_delete=models.CASCADE)
-    seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name="buyer_ratings")
+    buyer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="buyer_ratings")
+    seller = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def clean(self) -> None:
         '''
