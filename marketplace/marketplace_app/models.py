@@ -168,9 +168,9 @@ class Preference(models.Model):
         if self.odometer_min > self.odometer_max:
             raise ValidationError("The minimum odometer cannot be greater than the maximum odometer.")
 
-class Seller_Rating(models.Model):
+class Rating(models.Model):
     '''
-    The model to store the seller rating information.
+    The model to store the rating information.
     '''
     RATING = [
         (1, "Very bad"),
@@ -179,11 +179,20 @@ class Seller_Rating(models.Model):
         (4, "Good"),
         (5, "Very good"),
     ]
-
-    seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name="seller_ratings")
-    buyer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="seller_ratings")
+    
     rating = models.IntegerField(choices=RATING)
     comment = models.TextField(blank=True)
+        
+    class Meta:
+        abstract = True
+        
+class Seller_Rating(Rating):
+    '''
+    The model to store the seller rating information.
+    '''
+
+    seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name="seller_ratings")
+    buyer = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def clean(self) -> None:
         '''
@@ -192,22 +201,13 @@ class Seller_Rating(models.Model):
         if self.seller == self.buyer:
             raise ValidationError("The buyer and seller cannot be the same person.")
 
-class Buyer_Rating(models.Model):
+class Buyer_Rating(Rating):
     '''
     The model to store the buyer rating information.
     '''
-    RATING = [
-        (1, "Very bad"),
-        (2, "Bad"),
-        (3, "Average"),
-        (4, "Good"),
-        (5, "Very good"),
-    ]
 
-    buyer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="buyer_ratings")
+    buyer = models.ForeignKey(User, on_delete=models.CASCADE)
     seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name="buyer_ratings")
-    rating = models.IntegerField(choices=RATING)
-    comment = models.TextField(blank=True)
 
     def clean(self) -> None:
         '''
