@@ -2,6 +2,14 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
+def validate_year(year):
+    """
+    Validate whether the year is in the correct format.
+    Year should be in the format of 4 digits (yyyy).
+    """
+    if len(str(year)) != 4:
+        raise ValidationError("Year must be 4 digits.")
+
 class User_Detail(models.Model):
     '''
     The model to store user details.
@@ -81,11 +89,11 @@ class Car(models.Model):
         ("POOR", "The vehicle has significant cosmetic defects and is in need of mechanical repairs."),
     ]
 
-    year = models.IntegerField()
+    year = models.IntegerField(validators=[validate_year])
     model = models.ForeignKey(Car_Model, on_delete=models.CASCADE, related_name="cars")
     registration_number = models.CharField(max_length=6)
     status = models.CharField(max_length=11, choices=CAR_STATUS)
-    description = models.TextField()
+    description = models.TextField(blank=True, null=True)
     odometer = models.IntegerField()
     price = models.FloatField()
     condition = models.CharField(max_length=9, choices=CAR_CONDITION)
@@ -129,7 +137,7 @@ class Order(models.Model):
     seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name= "sales_orders")
     buyer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="purchase_orders")
     car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name="orders")
-    status = models.CharField(max_length=9, choices=ORDER_STATUS)
+    status = models.CharField(max_length=9, choices=ORDER_STATUS, default="PENDING")
 
     def clean(self):
         '''
@@ -142,8 +150,8 @@ class Preferred_Year_Range(models.Model):
     '''
     The model to store the preferred year range for a user on the cars.
     '''
-    year_min = models.IntegerField()
-    year_max = models.IntegerField()
+    year_min = models.IntegerField(validators=[validate_year])
+    year_max = models.IntegerField(validators=[validate_year])
 
     def __str__(self) -> str:
         return "From " + str(self.year_min) + " to " + str(self.year_max) + "."
@@ -152,13 +160,6 @@ class Preferred_Year_Range(models.Model):
         '''
         Field validation
         '''
-        # check if the year consists of 4 digits
-        if len(str(self.year_min)) != 4:
-            raise ValidationError("The minimum year should have 4 digits.")
-        
-        if len(str(self.year_max)) != 4:
-            raise ValidationError("The maximum year should have 4 digits.")
-
         # check if min year is less than max year
         if (self.year_min > self.year_max):
             raise ValidationError("The minimum year cannot be greater than the maximum year.")
@@ -192,10 +193,10 @@ class Preference(models.Model):
     year_range = models.ForeignKey(Preferred_Year_Range, on_delete=models.CASCADE, related_name="preferences", blank=True, null=True)
     price_range = models.ForeignKey(Preferred_Price_Range, on_delete=models.CASCADE, related_name="preferences", blank=True, null=True)
     odometer_range = models.ForeignKey(Preferred_Odometer_Range, on_delete=models.CASCADE, related_name="preferences", blank=True, null=True)
-    fuel = models.ManyToManyField(Fuel_Type, related_name="preferences", blank=True, null=True)
-    transmission = models.ManyToManyField(Transmission_Type, related_name="preferences", blank=True, null=True)
-    model = models.ManyToManyField(Car_Model, related_name="preferences", blank=True, null=True)
-    brand = models.ManyToManyField(Car_Brand, related_name="preferences", blank=True, null=True)
+    fuel = models.ManyToManyField(Fuel_Type, related_name="preferences", blank=True)
+    transmission = models.ManyToManyField(Transmission_Type, related_name="preferences", blank=True)
+    model = models.ManyToManyField(Car_Model, related_name="preferences", blank=True)
+    brand = models.ManyToManyField(Car_Brand, related_name="preferences", blank=True)
 
     def clean(self):
         '''
