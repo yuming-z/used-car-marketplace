@@ -28,6 +28,12 @@ class FuelTypeTest(TestCase):
         fuel = Fuel_Type.objects.create(name=fuel_name)
         self.assertEqual(fuel.name, str(Fuel_Type.objects.filter(name=fuel_name).first()))
 
+class TestCarBrand(TestCase):
+    def test_car_brand_display(self):
+        brand_name = "Test Brand"
+        brand = Car_Brand.objects.create(name=brand_name)
+        self.assertEqual(brand.name, str(Car_Brand.objects.filter(name=brand_name).first()))
+
 class OrderTest(TestCase):
 
     def setUp(self) -> None:
