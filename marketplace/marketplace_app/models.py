@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 def validate_year(year):
     """
@@ -8,7 +9,7 @@ def validate_year(year):
     Year should be in the format of 4 digits (yyyy).
     """
     if len(str(year)) != 4:
-        raise ValidationError("Year must be 4 digits.")
+        raise ValidationError(_("Year must be 4 digits."))
 
 class User_Detail(models.Model):
     '''
@@ -28,11 +29,11 @@ class User_Detail(models.Model):
             mobile_string = str(self.mobile)
 
             if len(mobile_string) != 10:
-                raise ValidationError("The mobile number should have 10 numbers.")
+                raise ValidationError(-("The mobile number should have 10 numbers."))
             
             if not mobile_string.startswith("04"):
                 # ref: https://www.australia.gov.au/telephone-country-and-area-codes
-                raise ValidationError("The mobile number is invalid.")
+                raise ValidationError(_("The mobile number is invalid."))
 
 class Fuel_Type(models.Model):
     '''
@@ -109,7 +110,7 @@ class Car(models.Model):
         '''
         # check if the year consists of 4 digits
         if len(str(self.year)) != 4:
-            raise ValidationError("The year should have 4 digits.")
+            raise ValidationError(_("The year should have 4 digits."))
 
 class Car_File(models.Model):
     '''
@@ -144,7 +145,7 @@ class Order(models.Model):
         The function to check if the buyer and seller are the same.
         '''
         if self.seller == self.buyer:
-            raise ValidationError("The buyer and seller cannot be the same person.")
+            raise ValidationError(_("The buyer and seller cannot be the same person."))
 
 class Preferred_Year_Range(models.Model):
     '''
@@ -162,7 +163,7 @@ class Preferred_Year_Range(models.Model):
         '''
         # check if min year is less than max year
         if (self.year_min > self.year_max):
-            raise ValidationError("The minimum year cannot be greater than the maximum year.")
+            raise ValidationError(_("The minimum year cannot be greater than the maximum year."))
         
     
 class Preferred_Price_Range(models.Model):
@@ -203,11 +204,11 @@ class Preference(models.Model):
         The function to check if the min value is less than the max value.
         '''
         if self.year_min > self.year_max:
-            raise ValidationError("The minimum year cannot be greater than the maximum year.")
+            raise ValidationError(-("The minimum year cannot be greater than the maximum year."))
         if self.price_min > self.price_max:
-            raise ValidationError("The minimum price cannot be greater than the maximum price.")
+            raise ValidationError(_("The minimum price cannot be greater than the maximum price."))
         if self.odometer_min > self.odometer_max:
-            raise ValidationError("The minimum odometer cannot be greater than the maximum odometer.")
+            raise ValidationError(_("The minimum odometer cannot be greater than the maximum odometer."))
 
 class Rating(models.Model):
     '''
@@ -240,7 +241,7 @@ class Seller_Rating(Rating):
         The function to check if the buyer and seller are the same.
         '''
         if self.seller == self.buyer:
-            raise ValidationError("The buyer and seller cannot be the same person.")
+            raise ValidationError(_("The buyer and seller cannot be the same person."))
 
 class Buyer_Rating(Rating):
     '''
@@ -255,4 +256,4 @@ class Buyer_Rating(Rating):
         The function to check if the buyer and seller are the same.
         '''
         if self.seller == self.buyer:
-            raise ValidationError("The buyer and seller cannot be the same person.")
+            raise ValidationError(_("The buyer and seller cannot be the same person."))
