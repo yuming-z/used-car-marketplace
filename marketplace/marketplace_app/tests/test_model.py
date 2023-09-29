@@ -2,6 +2,26 @@ from django.test import TestCase
 
 from marketplace_app.models import *
 
+class UserDeatilTest(TestCase):
+    def setUp(self) -> None:
+        self.user = User.objects.create(username="test", password="test")
+    
+    def test_no_mobile(self):
+        User_Detail.objects.create(user=self.user)
+        self.assertTrue(User_Detail.objects.filter(user=self.user).exists())
+    
+    def test_too_long_mobile(self):
+        user_detail = User_Detail.objects.create(user=self.user, mobile="04000000000")
+        self.assertRaises(ValidationError, user_detail.clean)
+
+    def test_invalid_mobile(self):
+        user_detail = User_Detail.objects.create(user=self.user, mobile="1234567890")
+        self.assertRaises(ValidationError, user_detail.clean)
+
+    def test_creation(self):
+        User_Detail.objects.create(user=self.user, mobile="0412345690")
+        self.assertTrue(User_Detail.objects.filter(user=self.user).exists())
+
 class OrderTest(TestCase):
 
     def setUp(self) -> None:
@@ -35,8 +55,7 @@ class OrderTest(TestCase):
 
     def test_order_different_seller_buyer(self):
         Order.objects.create(seller=self.seller, buyer=self.buyer, car=self.car)
-        self.assertTrue(Order.objects.filter(seller=self.seller, buyer=self.buyer, car=self.car).exists())
-        
+        self.assertTrue(Order.objects.filter(seller=self.seller, buyer=self.buyer, car=self.car).exists())      
     
     def test_order_invalid_status(self):
         status = "Test"
