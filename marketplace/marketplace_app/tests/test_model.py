@@ -26,7 +26,7 @@ class FuelTypeTest(TestCase):
     def test_fuel_display(self):
         fuel_name = "Electricity"
         fuel = Fuel_Type.objects.create(name=fuel_name)
-        self.assertEqual(fuel_name, Fuel_Type.objects.get(pk=1).__str__())
+        self.assertEqual(fuel.name, str(Fuel_Type.objects.filter(name=fuel_name).first()))
 
 class OrderTest(TestCase):
 

@@ -29,7 +29,7 @@ class User_Detail(models.Model):
             mobile_string = str(self.mobile)
 
             if len(mobile_string) != 10:
-                raise ValidationError(-("The mobile number should have 10 numbers."))
+                raise ValidationError(_("The mobile number should have 10 numbers."))
             
             if not mobile_string.startswith("04"):
                 # ref: https://www.australia.gov.au/telephone-country-and-area-codes
