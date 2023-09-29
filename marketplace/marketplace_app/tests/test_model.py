@@ -22,6 +22,12 @@ class UserDeatilTest(TestCase):
         User_Detail.objects.create(user=self.user, mobile="0412345690")
         self.assertTrue(User_Detail.objects.filter(user=self.user).exists())
 
+class FuelTypeTest(TestCase):
+    def test_fuel_display(self):
+        fuel_name = "Electricity"
+        fuel = Fuel_Type.objects.create(name=fuel_name)
+        self.assertEqual(fuel_name, Fuel_Type.objects.get(pk=1).__str__())
+
 class OrderTest(TestCase):
 
     def setUp(self) -> None:
