@@ -45,6 +45,12 @@ class TestCarModel(TestCase):
 
         self.assertEqual(model.name, str(Car_Model.objects.filter(name=model_name).first()))
 
+class TestTransmissionType(TestCase):
+    def test_transmission_type_display(self):
+        transmission_name = "Test Transmission"
+        transmission = Transmission_Type.objects.create(name=transmission_name)
+
+        self.assertEqual(transmission.name, str(Transmission_Type.objects.filter(name=transmission_name).first()))
 
 class OrderTest(TestCase):
 
