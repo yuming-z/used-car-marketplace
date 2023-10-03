@@ -370,3 +370,23 @@ class TestPreference(TestCase):
 
         # Assertions
         self.assertTrue(Preference.objects.filter(user=self.user, year_range=self.year_range, price_range=self.price_range, odometer_range=self.odometer_range).exists())
+
+class TestSellerRating(TestCase):
+    def setUp(self) -> None:
+        self.seller = User.objects.create(username="seller", password="seller")
+        self.buyer = User.objects.create(username="buyer", password="buyer")
+        self.comment = "test comment"
+    
+    def test_invalid_rating(self):
+        rating = 6
+        seller_rating = Seller_Rating.objects.create(rating=rating, comment=self.comment, seller=self.seller, buyer=self.buyer)
+        self.assertRaises(ValidationError, seller_rating.clean_fields)
+    
+    def test_invalid_user(self):
+        seller_rating = Seller_Rating.objects.create(rating=1, comment=self.comment, seller=self.seller, buyer=self.seller)
+        self.assertRaises(ValidationError, seller_rating.clean)
+    
+    def test_empty_comment(self):
+        comment = ""
+        seller_rating = Seller_Rating.objects.create(rating=1, comment=comment, seller=self.seller, buyer=self.buyer)
+        self.assertTrue(Seller_Rating.objects.filter(rating=1, comment=comment, seller=self.seller, buyer=self.buyer).exists())
