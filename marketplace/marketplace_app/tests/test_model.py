@@ -197,3 +197,18 @@ class TestPreferredPriceRange(TestCase):
         preferred_price_range = Preferred_Price_Range.objects.create(price_min=price_min, price_max=price_max)
 
         self.assertEqual(str(preferred_price_range), f"From {price_min} to {price_max}.")
+
+class TestPreferredOdometerRange(TestCase):
+    def test_max_less_than_min(self):
+        odometer_min = 1000
+        odometer_max = 500
+        preferred_odometer_range = Preferred_Odometer_Range.objects.create(odometer_min=odometer_min, odometer_max=odometer_max)
+        
+        self.assertRaises(ValidationError, preferred_odometer_range.clean)
+    
+    def test_preference_display(self):
+        odometer_min = 1000
+        odometer_max = 5000
+        preferred_odometer_range = Preferred_Odometer_Range.objects.create(odometer_min=odometer_min, odometer_max=odometer_max)
+
+        self.assertEqual(str(preferred_odometer_range), f"From {odometer_min} to {odometer_max}.")

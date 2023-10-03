@@ -187,6 +187,10 @@ class Preferred_Odometer_Range(models.Model):
     def __str__(self) -> str:
         return "From " + str(self.odometer_min) + " to " + str(self.odometer_max) + "."
 
+    def clean(self) -> None:
+        if self.odometer_min > self.odometer_max:
+            raise ValidationError(_("The minimum odometer cannot be greater than the maximum odometer."))
+
 class Preference(models.Model):
     '''
     The model to store the preference of a user.
