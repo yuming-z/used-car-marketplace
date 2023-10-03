@@ -204,17 +204,6 @@ class Preference(models.Model):
     model = models.ManyToManyField(Car_Model, related_name="preferences", blank=True)
     brand = models.ManyToManyField(Car_Brand, related_name="preferences", blank=True)
 
-    def clean(self):
-        '''
-        The function to check if the min value is less than the max value.
-        '''
-        if self.year_min > self.year_max:
-            raise ValidationError(-("The minimum year cannot be greater than the maximum year."))
-        if self.price_min > self.price_max:
-            raise ValidationError(_("The minimum price cannot be greater than the maximum price."))
-        if self.odometer_min > self.odometer_max:
-            raise ValidationError(_("The minimum odometer cannot be greater than the maximum odometer."))
-
 class Rating(models.Model):
     '''
     The model to store the rating information.
