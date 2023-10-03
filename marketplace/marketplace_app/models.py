@@ -108,14 +108,6 @@ class Car(models.Model):
     prev_owner_count = models.IntegerField(default=1)
     location = models.CharField(max_length=100)
 
-    def clean(self) -> None:
-        '''
-        Field validation
-        '''
-        # check if the year consists of 4 digits
-        if len(str(self.year)) != 4:
-            raise ValidationError(_("The year should have 4 digits."))
-
 class Car_File(models.Model):
     '''
     The model to store car files.
