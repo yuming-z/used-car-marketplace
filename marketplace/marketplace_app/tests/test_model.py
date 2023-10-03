@@ -176,3 +176,9 @@ class TestPreferredYearRange(TestCase):
         year_max = 12345
         preferred_year_range = Preferred_Year_Range.objects.create(year_min=year_min, year_max=year_max)
         self.assertRaises(ValidationError, preferred_year_range.clean_fields)
+    
+    def test_display(self):
+        year_min = 1990
+        year_max = 1991
+        preferred_year_range = Preferred_Year_Range.objects.create(year_min=year_min, year_max=year_max)
+        self.assertEqual(str(preferred_year_range), f"From {year_min} to {year_max}.")
