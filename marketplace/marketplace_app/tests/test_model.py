@@ -212,3 +212,161 @@ class TestPreferredOdometerRange(TestCase):
         preferred_odometer_range = Preferred_Odometer_Range.objects.create(odometer_min=odometer_min, odometer_max=odometer_max)
 
         self.assertEqual(str(preferred_odometer_range), f"From {odometer_min} to {odometer_max}.")
+
+class TestPreference(TestCase):
+    def setUp(self) -> None:
+        # Create a user
+        self.user = User.objects.create(username="test", password="test")
+
+        # Define year range
+        year_min = 2000
+        year_max = 2022
+
+        self.year_range = Preferred_Year_Range.objects.create(year_min=year_min, year_max=year_max)
+
+        # Define price range
+        price_min = 1000.0
+        price_max = 5000.0
+
+        self.price_range = Preferred_Price_Range.objects.create(price_min=price_min, price_max=price_max)
+
+        # Define odometer range
+        odometer_min = 1000
+        odometer_max = 10000
+
+        self.odometer_range = Preferred_Odometer_Range.objects.create(odometer_min=odometer_min, odometer_max=odometer_max)
+
+        # Create fuel types
+        self.diesel = Fuel_Type.objects.create(name="Diesel")
+        self.electricity = Fuel_Type.objects.create(name="Electricity")
+
+        # Create transmission types
+        self.manual = Transmission_Type.objects.create(name="Manual")
+        self.automatic = Transmission_Type.objects.create(name="Automatic")
+
+        # Create car brands
+        self.toyota = Car_Brand.objects.create(name="Toyota")
+        self.honda = Car_Brand.objects.create(name="Honda")
+
+        # Create car models
+        self.camry = Car_Model.objects.create(name="Camry", brand=self.toyota)
+        self.civic = Car_Model.objects.create(name="Civic", brand=self.honda)
+
+    def test_blank_year_range(self):
+        preference = Preference(
+            user=self.user,
+            price_range=self.price_range,
+            odometer_range=self.odometer_range,
+        )
+        preference.save()
+
+        # add many-to-many relationships
+        preference.fuel.add(self.diesel, self.electricity)
+        preference.transmission.add(self.manual, self.automatic)
+        preference.model.add(self.camry, self.civic)
+        preference.brand.add(self.toyota, self.honda)
+
+        # Assertions
+        self.assertTrue(Preference.objects.filter(user=self.user, price_range=self.price_range, odometer_range=self.odometer_range).exists())
+        
+    def test_blank_price_range(self):
+        preference = Preference(
+            user=self.user,
+            year_range=self.year_range,
+            odometer_range=self.odometer_range,
+        )
+        preference.save()
+
+        # add many-to-many relationships
+        preference.fuel.add(self.diesel, self.electricity)
+        preference.transmission.add(self.manual, self.automatic)
+        preference.model.add(self.camry, self.civic)
+        preference.brand.add(self.toyota, self.honda)
+
+        # Assertions
+        self.assertTrue(Preference.objects.filter(user=self.user, year_range=self.year_range, odometer_range=self.odometer_range).exists())
+    
+    def test_blank_odometer_range(self):
+        preference = Preference(
+            user=self.user,
+            year_range=self.year_range,
+            price_range=self.price_range,
+        )
+        preference.save()
+
+        # add many-to-many relationships
+        preference.fuel.add(self.diesel, self.electricity)
+        preference.transmission.add(self.manual, self.automatic)
+        preference.model.add(self.camry, self.civic)
+        preference.brand.add(self.toyota, self.honda)
+
+        # Assertions
+        self.assertTrue(Preference.objects.filter(user=self.user, year_range=self.year_range, price_range=self.price_range).exists())
+    
+    def test_blank_fuel(self):
+        preference = Preference(
+            user=self.user,
+            year_range=self.year_range,
+            price_range=self.price_range,
+            odometer_range=self.odometer_range,
+        )
+        preference.save()
+
+        # add many-to-many relationships
+        preference.transmission.add(self.manual, self.automatic)
+        preference.model.add(self.camry, self.civic)
+        preference.brand.add(self.toyota, self.honda)
+
+        # Assertions
+        self.assertTrue(Preference.objects.filter(user=self.user, year_range=self.year_range, price_range=self.price_range, odometer_range=self.odometer_range).exists())
+    
+    def test_blank_transmission(self):
+        preference = Preference(
+            user=self.user,
+            year_range=self.year_range,
+            price_range=self.price_range,
+            odometer_range=self.odometer_range,
+        )
+        preference.save()
+
+        # add many-to-many relationships
+        preference.fuel.add(self.diesel, self.electricity)
+        preference.model.add(self.camry, self.civic)
+        preference.brand.add(self.toyota, self.honda)
+
+        # Assertions
+        self.assertTrue(Preference.objects.filter(user=self.user, year_range=self.year_range, price_range=self.price_range, odometer_range=self.odometer_range).exists())
+    
+    def test_blank_model(self):
+        preference = Preference(
+            user=self.user,
+            year_range=self.year_range,
+            price_range=self.price_range,
+            odometer_range=self.odometer_range,
+        )
+        preference.save()
+
+        # add many-to-many relationships
+        preference.fuel.add(self.diesel, self.electricity)
+        preference.transmission.add(self.manual, self.automatic)
+        preference.brand.add(self.toyota, self.honda)
+
+        # Assertions
+        self.assertTrue(Preference.objects.filter(user=self.user, year_range=self.year_range, price_range=self.price_range, odometer_range=self.odometer_range).exists())
+    
+    def test_blank_brand(self):
+        preference = Preference(
+            user=self.user,
+            year_range=self.year_range,
+            price_range=self.price_range,
+            odometer_range=self.odometer_range,
+        )
+        preference.save()
+
+        # add many-to-many relationships
+        preference.fuel.add(self.diesel, self.electricity)
+        preference.transmission.add(self.manual, self.automatic)
+        preference.model.add(self.camry, self.civic)
+
+        # Assertions
+        self.assertTrue(Preference.objects.filter(user=self.user, year_range=self.year_range, price_range=self.price_range, odometer_range=self.odometer_range).exists())
