@@ -144,3 +144,35 @@ class OrderTest(TestCase):
             with self.subTest(status=status[s]):
                 Order.objects.create(seller=self.seller, buyer=self.buyer, car=self.car, status=status)
                 self.assertTrue(Order.objects.filter(seller=self.seller, buyer=self.buyer, car=self.car, status=status).exists())
+    
+class TestPreferredYearRange(TestCase):
+    def test_invalid_max_year(self):
+        year_min = 1990
+        year_max = 1980
+        preferred_year_range = Preferred_Year_Range.objects.create(year_min=year_min, year_max=year_max)
+        self.assertRaises(ValidationError, preferred_year_range.clean)
+    
+    def test_invalid_min_year(self):
+        year_min = 123
+        year_max = 1990
+        preferred_year_range = Preferred_Year_Range.objects.create(year_min=year_min, year_max=year_max)
+
+        self.assertRaises(ValidationError, preferred_year_range.clean_fields)
+    
+    def test_min_future_year(self):
+        year_min = 3000
+        year_max = 3001
+        preferred_year_range = Preferred_Year_Range.objects.create(year_min=year_min, year_max=year_max)
+        self.assertRaises(ValidationError, preferred_year_range.clean_fields)
+    
+    def test_max_future_year(self):
+        year_min = 1990
+        year_max = 3001
+        preferred_year_range = Preferred_Year_Range.objects.create(year_min=year_min, year_max=year_max)
+        self.assertRaises(ValidationError, preferred_year_range.clean_fields)
+
+    def test_invalid_max_year(self):
+        year_min = 1990
+        year_max = 12345
+        preferred_year_range = Preferred_Year_Range.objects.create(year_min=year_min, year_max=year_max)
+        self.assertRaises(ValidationError, preferred_year_range.clean_fields)
