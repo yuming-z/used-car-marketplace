@@ -135,6 +135,7 @@ class Order(models.Model):
     buyer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="purchase_orders")
     car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name="orders")
     status = models.CharField(max_length=9, choices=ORDER_STATUS, default="PENDING")
+    order_date = models.DateTimeField(auto_now_add=True)
 
     def clean(self):
         '''
