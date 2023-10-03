@@ -388,5 +388,25 @@ class TestSellerRating(TestCase):
     
     def test_empty_comment(self):
         comment = ""
-        seller_rating = Seller_Rating.objects.create(rating=1, comment=comment, seller=self.seller, buyer=self.buyer)
+        Seller_Rating.objects.create(rating=1, comment=comment, seller=self.seller, buyer=self.buyer)
         self.assertTrue(Seller_Rating.objects.filter(rating=1, comment=comment, seller=self.seller, buyer=self.buyer).exists())
+
+class TestBuyerRating(TestCase):
+    def setUp(self) -> None:
+        self.seller = User.objects.create(username="seller", password="seller")
+        self.buyer = User.objects.create(username="buyer", password="buyer")
+        self.comment = "test comment"
+    
+    def test_invalid_rating(self):
+        rating = 6
+        buyer_rating = Buyer_Rating.objects.create(rating=rating, comment=self.comment, buyer=self.buyer, seller=self.seller)
+        self.assertRaises(ValidationError, buyer_rating.clean_fields)
+    
+    def test_invalid_user(self):
+        buyer_rating = Buyer_Rating.objects.create(rating=1, comment=self.comment, buyer=self.seller, seller=self.seller)
+        self.assertRaises(ValidationError, buyer_rating.clean)
+    
+    def test_empty_comment(self):
+        comment = ""
+        Buyer_Rating.objects.create(rating=1, comment=comment, buyer=self.buyer, seller=self.seller)
+        self.assertTrue(Buyer_Rating.objects.filter(rating=1, comment=comment, buyer=self.buyer, seller=self.seller).exists())
