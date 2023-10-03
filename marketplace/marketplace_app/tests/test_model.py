@@ -34,6 +34,18 @@ class TestCarBrand(TestCase):
         brand = Car_Brand.objects.create(name=brand_name)
         self.assertEqual(brand.name, str(Car_Brand.objects.filter(name=brand_name).first()))
 
+class TestCarModel(TestCase):
+
+    def setUp(self) -> None:
+        self.brand_detail = Car_Brand.objects.create(name="Test Brand")
+
+    def test_car_model_display(self):
+        model_name = "Test Model"
+        model = Car_Model.objects.create(brand=self.brand_detail, name=model_name)
+
+        self.assertEqual(model.name, str(Car_Model.objects.filter(name=model_name).first()))
+
+
 class OrderTest(TestCase):
 
     def setUp(self) -> None:
