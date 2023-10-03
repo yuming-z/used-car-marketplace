@@ -52,6 +52,51 @@ class TestTransmissionType(TestCase):
 
         self.assertEqual(transmission.name, str(Transmission_Type.objects.filter(name=transmission_name).first()))
 
+class TestCar(TestCase):
+    def setUp(self) -> None:
+        self.brand_detail = Car_Brand.objects.create(name="Test Brand")
+        self.model_detail = Car_Model.objects.create(name="Test Model", brand=self.brand_detail)
+        self.owner = User.objects.create(username="test", password="test")
+        self.fuel_detail = Fuel_Type.objects.create(name="Test Fuel")
+        self.transmission_detail = Transmission_Type.objects.create(name="Test Transmission")
+        self.registration_number = "ABC123"
+        self.odometer = 1000
+        self.status = "AVAILABLE"
+        self.price = 1000
+        self.description = "Sample description"
+        self.condition = "EXCELLENT"
+        self.location = "Sydney"
+    
+    def test_future_year(self):
+        year = 3000
+        car = Car.objects.create(year=year, model=self.model_detail, registration_number=self.registration_number, odometer=self.odometer, fuel_type=self.fuel_detail, status=self.status, price=self.price, description=self.description, condition=self.condition, owner=self.owner, location=self.location)
+
+        self.assertRaises(ValidationError, car.clean_fields)
+    
+    def test_invalid_year(self):
+        year = 123
+        car = Car.objects.create(year=year, model=self.model_detail, registration_number=self.registration_number, odometer=self.odometer, fuel_type=self.fuel_detail, status=self.status, price=self.price, description=self.description, condition=self.condition, owner=self.owner, location=self.location)
+
+        self.assertRaises(ValidationError, car.clean_fields)
+
+    def test_invalid_car_status(self):
+        status = "Test"
+        car = Car.objects.create(year=2021, model=self.model_detail, registration_number=self.registration_number, odometer=self.odometer, fuel_type=self.fuel_detail, status=status, price=self.price, description=self.description, condition=self.condition, owner=self.owner, location=self.location)
+
+        self.assertRaises(ValidationError, car.clean_fields)
+
+    def test_invalid_car_condition(self):
+        condition = "Test"
+        car = Car.objects.create(year=2021, model=self.model_detail, registration_number=self.registration_number, odometer=self.odometer, fuel_type=self.fuel_detail, status=self.status, price=self.price, description=self.description, condition=condition, owner=self.owner, location=self.location)
+
+        self.assertRaises(ValidationError, car.clean_fields)
+
+    def test_empty_description(self):
+        description = ""
+        car = Car.objects.create(year=2021, model=self.model_detail, registration_number=self.registration_number, odometer=self.odometer, fuel_type=self.fuel_detail, status=self.status, price=self.price, description=description, condition=self.condition, owner=self.owner, location=self.location)
+
+        self.assertTrue(Car.objects.filter(year=2021, model=self.model_detail, registration_number=self.registration_number, odometer=self.odometer, fuel_type=self.fuel_detail, status=self.status, price=self.price, description=description, condition=self.condition, owner=self.owner, location=self.location).exists())
+
 class OrderTest(TestCase):
 
     def setUp(self) -> None:
