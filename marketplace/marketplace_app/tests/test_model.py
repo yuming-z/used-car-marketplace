@@ -182,3 +182,18 @@ class TestPreferredYearRange(TestCase):
         year_max = 1991
         preferred_year_range = Preferred_Year_Range.objects.create(year_min=year_min, year_max=year_max)
         self.assertEqual(str(preferred_year_range), f"From {year_min} to {year_max}.")
+
+class TestPreferredPriceRange(TestCase):
+    def test_max_less_than_min(self):
+        price_min = 1000.0
+        price_max = 500.0
+        preferred_price_range = Preferred_Price_Range.objects.create(price_min=price_min, price_max=price_max)
+        
+        self.assertRaises(ValidationError, preferred_price_range.clean)
+    
+    def test_preference_display(self):
+        price_min = 1000.0
+        price_max = 5000.0
+        preferred_price_range = Preferred_Price_Range.objects.create(price_min=price_min, price_max=price_max)
+
+        self.assertEqual(str(preferred_price_range), f"From {price_min} to {price_max}.")

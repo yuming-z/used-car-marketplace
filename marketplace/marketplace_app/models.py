@@ -172,6 +172,10 @@ class Preferred_Price_Range(models.Model):
 
     def __str__(self) -> str:
         return "From " + str(self.price_min) + " to " + str(self.price_max) + "."
+
+    def clean(self) -> None:
+        if self.price_min > self.price_max:
+            raise ValidationError(_("The minimum price cannot be greater than the maximum price."))
     
 class Preferred_Odometer_Range(models.Model):
     '''
