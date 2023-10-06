@@ -3,10 +3,13 @@
 ## Prerequisites
 
 - [Python](https://www.python.org/downloads/) 3.8 or higher
+- [PostgreSQL](https://www.postgresql.org/download/) 13.4 or higher
 
 ## Dependencies
 
-- [Django](https://www.djangoproject.com/) 4.2.5
+- [Django](https://pypi.org/project/Django/) 4.2.5
+- [django-environ](https://pypi.org/project/django-environ/) 0.11.2
+- [psycopg](https://pypi.org/project/psycopg/) 3.1.12
 
 ## How to run the application
 
@@ -73,7 +76,7 @@ To install dependencies, run the following command:
 pip install -r requirements.txt
 ```
 
-> **Note:** If you are using containers, you do not need to install dependencies as the dependencies are already installed during set-up process.
+> **Note:** If you are using containers, you do not need to install dependencies as the dependencies are already installed during [set-up process](#containers).
 
 ### Step 3: Run the Application
 
