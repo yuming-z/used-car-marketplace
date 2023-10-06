@@ -15,6 +15,10 @@
 
 ### Step 1: Environment Setup
 
+Create a new environment file `.env` in the root directory of the project and copy the contents from [`scaffold.env`](scaffold.env).
+
+Then, fill in the environment variables in the `.env` file.
+
 The program can be executed in either of the environments:
 
 1. In the local environment.
