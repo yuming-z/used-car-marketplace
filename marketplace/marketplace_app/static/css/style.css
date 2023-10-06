@@ -14,12 +14,12 @@ body {
     background-color: aliceblue;
 }
 
-.header {
+.nav {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    padding: 20px 75px;
+    padding: 20px 60px;
     background: lightsalmon;
     display: flex;
     justify-content: space-between;
@@ -35,24 +35,31 @@ body {
     color: #2D636D;
 }
 
-.navbar a {
+.navlink a {
     font-size: 16px;
     letter-spacing: 1px;
     color: #2D636D;
     font-weight: 500;
     text-decoration: none;
-    margin-left: 20px;
-    padding: 14px 16px;
+    /* margin-left: 20px; */
+    padding: 15px 20px;
 }
 
-.navbar a:hover {
+.navlink a:hover {
     background-color: aliceblue;
 }
+
+/* .searchbody {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: auto;
+} */
 
 .footer {
     display: block;
     text-align: left;
-    padding: 20px;
+    padding: 20px 60px 100px 60px;
     background-color: lightsalmon;
     color: #2D636D;
     margin-top: auto;
