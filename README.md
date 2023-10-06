@@ -22,6 +22,8 @@ The program can be executed in either of the environments:
 
 #### Local environment
 
+> **Note:** You need to create your own database in PostgreSQL before running the program in the local environment.
+
 It is strongly recommended to use **virtual environment** to run the program in the local environment.
 
 To create a virtual environment, run the following command:
