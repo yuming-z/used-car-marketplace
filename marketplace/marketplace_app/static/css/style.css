@@ -14,12 +14,32 @@ body {
     background-color: aliceblue;
 }
 
+.marketing-header {
+    text-align: center;
+    padding: 20px 100px;
+}
+
+.container .btn-overlay {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    background-color: #555;
+    color: white;
+    font-size: 16px;
+    padding: 12px 24px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    text-align: center;
+}
+
 .nav {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    padding: 20px 60px;
+    padding: 10px 40px;
     background: lightsalmon;
     display: flex;
     justify-content: space-between;
@@ -63,4 +83,29 @@ body {
     background-color: lightsalmon;
     color: #2D636D;
     margin-top: auto;
+}
+
+/* custom colour for navbar */
+.navbar-custom {
+    background-color: lightsalmon;
+}
+ 
+.navbar-custom .navbar-brand,
+.navbar-custom .navbar-text {
+    color: #2D636D;
+}
+
+/* footer styles */
+.nav-footer {
+    --bs-nav-link-padding-x: 1rem;
+    --bs-nav-link-padding-y: 0.5rem;
+    --bs-nav-link-font-weight: ;
+    --bs-nav-link-color: var(--bs-link-color);
+    --bs-nav-link-hover-color: var(--bs-link-hover-color);
+    --bs-nav-link-disabled-color: var(--bs-secondary-color);
+    display: flex;
+    flex-wrap: wrap;
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
 }
