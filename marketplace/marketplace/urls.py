@@ -22,5 +22,7 @@ urlpatterns = [
     path('', include('marketplace_app.urls')),
     path('index', include('marketplace_app.urls')),
     path('login', include('marketplace_app.urls')),
+    path('signup', include('marketplace_app.urls')),
+    path('forgotpassword', include('marketplace_app.urls')),
     path('admin/', admin.site.urls),
 ]

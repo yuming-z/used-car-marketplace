@@ -7,3 +7,9 @@ def index(request):
 
 def login(request):
     return render(request, 'login.html')
+
+def signup(request):
+    return render(request, 'signup.html')
+
+def forgotpassword(request):
+    return render(request, 'forgotpassword.html')
