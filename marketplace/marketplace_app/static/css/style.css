@@ -14,11 +14,18 @@ body {
     background-color: aliceblue;
 }
 
+img.img-no-resize {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+}
+
 .marketing-header {
     text-align: center;
     padding: 20px 100px;
 }
 
+/* custom padding for Carousel search */
 .search-bar-padding {
     transform: translate(-0%, -100%);
     padding: 50px 0; /* Adjust padding as needed */
@@ -34,7 +41,7 @@ body {
     margin-right: 10px;
 }
 
-/* custom button for Carousel button */
+/* custom button for homepage button */
 .btn-custom {
     --bs-btn-color: #fff;
     --bs-btn-bg: #555;
@@ -51,6 +58,46 @@ body {
     --bs-btn-disabled-bg: #555;
     --bs-btn-disabled-border-color: #555;
 }
+
+/* for the 'Trending' section of homepage */
+.shape-img {
+    border: 3px solid #555;
+    border-radius: 5px;
+}
+
+.trend-text {
+    margin: auto;
+    padding: 15px 20px;
+    word-wrap: break-word;
+}
+
+.mini-marketing {
+    padding: 15px;
+}
+
+.carousel-buttons {
+    text-align: center;
+    margin-top: 10px;
+  }
+  
+#prevBtn,
+#nextBtn {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+}
+
+#prevBtn {
+    margin-right: 10px;
+}
+
+#prevBtn:hover,
+#nextBtn:hover {
+    background-color: #0056b3;
+}
+  
 
 /* button for Picked For You section of home page */
 .container .btn-overlay {
