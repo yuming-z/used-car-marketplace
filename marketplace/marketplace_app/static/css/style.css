@@ -16,6 +16,13 @@ body {
     background-color: aliceblue;
 }
 
+hr {
+    top:20px;
+    border:none;
+    height:2px;
+    background:black;
+}
+
 /* Logo */
 
 .logo {
@@ -65,7 +72,7 @@ body {
 
 /* Login */
 
-.return {
+.top-spacing {
     display: flex;
     top:0;
     left:0;
@@ -81,23 +88,29 @@ body {
     margin-top: 200px;
     margin-left: auto;
     margin-right: auto;
-    width:40%;
+    width:400px;
+    height:600px;
     background-color: white;
     padding:0px 30px;
+    border-radius: 30px;
 }
 
 .form {
     padding-bottom: 10px;
 }
 
+.form-title {
+    padding-bottom: 5px;
+}
+
 .form-control {
-    padding:10px;
+    padding:5px;
     border-radius: 10px;
     text-align: center;
 }
 
 .button-space {
-    padding:20px;
+    padding: 10px;
 }
 
 .login-button {
