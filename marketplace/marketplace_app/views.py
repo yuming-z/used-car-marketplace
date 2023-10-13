@@ -8,6 +8,15 @@ from .models import Car, Fuel_Type
 def index(request):
     return render(request, 'index.html')
 
+def login(request):
+    return render(request, 'login.html')
+
+def signup(request):
+    return render(request, 'signup.html')
+
+def forgotpassword(request):
+    return render(request, 'forgotpassword.html')
+
 # made for testing purposes
 # def search(request):
 #     try:

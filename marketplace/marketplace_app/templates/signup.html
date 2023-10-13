@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}
+Sign Up
+{% endblock title %}
+
+{% block content %}
+
+<div class="top-spacing">
+  <a href="index">Return Home</a>
+</div>
+
+<div class="login-form">
+    <form>
+  
+      <div class="logo-login">
+        <a href="index" class="logo">LOGO</a>
+      </div>
+  
+      <br>
+      <h2>Create an Account</h2>
+      <br>
+  
+      <div class="form">
+        <p class="form-title">Enter your Email Address</p>
+        <input type="email" class="form-control" placeholder="example@email.com">
+      </div>
+  
+      <div class="form">
+        <p class="form-title">Enter a Password</p>
+        <input type="password" class="form-control" placeholder="Password">
+      </div>
+
+      <div class="form">
+        <p class="form-title">Confirm your Password</p>
+        <input type="password" class="form-control" placeholder="Confirm Password">
+      </div>
+
+      <div class="form">
+        <p class="form-title">Enter your Full Name</p>
+        <input type="text" class="form-control" placeholder="John Citizen">
+      </div>
+
+      <div class="form">
+        <p class="form-title">Enter your Phone Number</p>
+        <input type="number" class="form-control" placeholder="0444 444 444">
+      </div>
+      
+      <div class="button-space">
+        <button class="login-button" type="submit">Sign Up</button>
+      </div>
+
+      <br>
+      <hr>
+      <br>
+
+      <div class="bottom-text">
+        <a>Already have an account? </a><a href="login">Login</a>
+      </div>
+      
+    </form>
+  </div>
+
+{% endblock content %}
