@@ -217,7 +217,7 @@ img.img-no-resize {
 }
 
 .button-space {
-    padding: 10px;
+    padding-top: 10px;
 }
 
 .login-button {
@@ -231,7 +231,7 @@ img.img-no-resize {
 
 .bottom-text {
     padding-bottom: 50px;
-
+}
 
 /* custom colour for navbar */
 .navbar-custom {
