@@ -29,6 +29,16 @@ Sign Up
           {% endfor %}
         </div>
       {% endfor %}
+
+      {% if request.POST %}
+        {% if signup_form.non_field_errors %}
+          <div class="container">
+              {% for error in signup_form.non_field_errors %}
+                  <p style="color: red">{{ error }}</p>
+              {% endfor %}
+          </div>
+        {% endif %}
+      {% endif %}
       
       <div class="button-space">
         <button class="login-button" type="submit">Sign Up</button>

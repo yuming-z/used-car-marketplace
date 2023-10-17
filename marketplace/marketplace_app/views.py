@@ -4,7 +4,7 @@ from django.utils.html import escape
 from django.contrib.auth import login, authenticate
 
 from .models import User_Detail
-from .forms import SignupForm, LoginForm
+from .forms import SignupForm, LoginForm    
 
 # Create your views here.
 def index(request):
@@ -16,8 +16,8 @@ def login_view(request):
         if form.is_valid():
             user_email = form.cleaned_data['email']
             user_password = form.cleaned_data['password']
-            user = authenticate(request, username=user_email, password=user_password)
 
+            user = authenticate(request, username=user_email, password=user_password)
             if user is not None:
                 login(request, user)
                 return redirect('index')
@@ -32,13 +32,22 @@ def signup_view(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
-            user = form.save()  
-            User_Detail.objects.create(user=user, mobile=form.number_exists())
-            user_password = form.cleaned_data['password1']
-            user = authenticate(request, username=user.email, password=user_password) 
+            
+            user, msg = form.save()      
             if user is not None:
+                print("Signup successful")
+                User_Detail.objects.create(user=user, mobile=form.number_exists())
+
+                user_password = form.cleaned_data['password1']
+                user = authenticate(request, username=user.email, password=user_password) 
                 login(request, user)  # Log the user in
                 return redirect('index')  # Redirect to a home page
+            
+            else:
+                if msg == "mobile":
+                    form.add_error(None, "Signup failed. Phone Number already exists.")
+                elif msg == "email":
+                    form.add_error(None, "Signup failed. Email already exists.")
     else:
         form = SignupForm()
 
