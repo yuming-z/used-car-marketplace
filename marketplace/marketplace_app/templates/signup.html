@@ -11,40 +11,24 @@ Sign Up
 </div>
 
 <div class="login-form">
-    <form>
-  
-      <div class="logo-login">
-        <a href="index" class="logo">LOGO</a>
-      </div>
-  
-      <br>
-      <h2>Create an Account</h2>
-      <br>
-  
-      <div class="form">
-        <p class="form-title">Enter your Email Address</p>
-        <input type="email" class="form-control" placeholder="example@email.com">
-      </div>
-  
-      <div class="form">
-        <p class="form-title">Enter a Password</p>
-        <input type="password" class="form-control" placeholder="Password">
-      </div>
+    <div class="logo-login">
+      <a href="index" class="logo">LOGO</a>
+    </div>
 
-      <div class="form">
-        <p class="form-title">Confirm your Password</p>
-        <input type="password" class="form-control" placeholder="Confirm Password">
-      </div>
-
-      <div class="form">
-        <p class="form-title">Enter your Full Name</p>
-        <input type="text" class="form-control" placeholder="John Citizen">
-      </div>
-
-      <div class="form">
-        <p class="form-title">Enter your Phone Number</p>
-        <input type="number" class="form-control" placeholder="0444 444 444">
-      </div>
+    <br>
+    <h2>Create an Account</h2>
+    <br>
+    <form method="POST">
+      {% csrf_token %}
+      {% for field in signup_form %}
+        <div class="form-group">
+          <p class="form-title">{{ field.label_tag }}</p>
+          {{ field }}
+          {% for error in field.errors %}
+            <p style="color: red">{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endfor %}
       
       <div class="button-space">
         <button class="login-button" type="submit">Sign Up</button>
@@ -53,7 +37,6 @@ Sign Up
       <br>
       <hr>
       <br>
-
       <div class="bottom-text">
         <a>Already have an account? </a><a href="login">Login</a>
       </div>
