@@ -11,33 +11,25 @@ Login
 </div>
 
 <div class="login-form">
-  <div class="logo-login">
-    <a href="index" class="logo">LOGO</a>
-  </div>
+  <form>
 
-  <br>
-  <h2>Login to Your Account</h2>
-  <br>
-
-  <form method="POST">
-    {% csrf_token %}
-
-    {% for field in login_form %}
-    <div class="form">
-      <p class="form-title">{{ field.label_tag }}</p>
-      {{ field }}
+    <div class="logo-login">
+      <a href="index" class="logo">LOGO</a>
     </div>
-    {% endfor %}
 
-    {% if request.POST %}
-      {% if login_form.non_field_errors %}
-        <div class="container">
-            {% for error in login_form.non_field_errors %}
-                <p style="color: red">{{ error }}</p>
-            {% endfor %}
-        </div>
-      {% endif %}
-    {% endif %}
+    <br>
+    <h2>Login to Your Account</h2>
+    <br>
+
+    <div class="form">
+      <p class="form-title">Enter your Email</p>
+      <input type="email" class="form-control" placeholder="example@email.com">
+    </div>
+
+    <div class="form">
+      <p class="form-title">Enter your Password</p>
+      <input type="password" class="form-control" placeholder="Password">
+    </div>
 
     <div class="button-space">
       <button class="login-button" type="submit">Login</button>
