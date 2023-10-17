@@ -4,18 +4,20 @@ from django.utils.html import escape
 
 from .models import Car, Fuel_Type
 
+APP_NAME = "marketplace_app/"
+
 # Create your views here.
 def index(request):
-    return render(request, 'index.html')
+    return render(request, APP_NAME + 'index.html')
 
 def login(request):
-    return render(request, 'login.html')
+    return render(request, APP_NAME + 'login.html')
 
 def signup(request):
-    return render(request, 'signup.html')
+    return render(request, APP_NAME + 'signup.html')
 
 def forgotpassword(request):
-    return render(request, 'forgotpassword.html')
+    return render(request, APP_NAME + 'forgotpassword.html')
 
 # made for testing purposes
 # def search(request):
