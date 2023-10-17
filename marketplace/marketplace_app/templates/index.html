@@ -92,6 +92,13 @@ Homepage
         <button id="nextBtn" onclick="changeSlide(1)">Next</button>
       </div> -->
     </div>
+    {% if user.is_authenticated %}
+        <p>Welcome, {{ user.username }}!</p>
+        <!-- Display content for authenticated users -->
+    {% else %}
+        <p>You are not logged in.</p>
+        <!-- Display content for non-authenticated users -->
+    {% endif %}
 
     <!-- PICKED FOR YOU -->
     <div class="container mini-marketing"></div>
