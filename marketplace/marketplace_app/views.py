@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404
 from django.utils.html import escape
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 
 from .models import User_Detail
 from .forms import SignupForm, LoginForm    
@@ -27,6 +27,10 @@ def login_view(request):
         form = LoginForm()
 
     return render(request, 'login.html', {'login_form': form})
+
+def logout_view(request):
+    logout(request)
+    return redirect('/')
 
 def signup_view(request):
     if request.method == 'POST':

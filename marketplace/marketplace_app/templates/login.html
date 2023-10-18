@@ -43,6 +43,10 @@ Login
       <button class="login-button" type="submit">Login</button>
     </div>
 
+    {% Load socialaccount %}
+    <h2>Sign in with Google</h2>
+    <a href="{% provider_login_url 'google' %}?next=/">Login with Google</a>
+
     <br>
     <hr>
     <br>

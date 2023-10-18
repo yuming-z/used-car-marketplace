@@ -100,6 +100,7 @@ Homepage
     <!-- only used for testing -->
     {% if user.is_authenticated %}
         <p>Welcome, {{ user.username }}!</p>
+        <a href="logout">Logout</a> <!-- only used for testing -->
     {% else %}
         <p>You are not logged in.</p>
     {% endif %}
