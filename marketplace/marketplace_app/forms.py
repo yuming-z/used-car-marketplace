@@ -1,9 +1,6 @@
 from django.forms import ModelForm
-from django.core.exceptions import ValidationError
 
-import re
-
-from .models import Car
+from .models import Car, Car_Brand, Car_Model, Car_File, Fuel_Type, Transmission_Type
 
 class CarForm(ModelForm):
     '''
@@ -16,7 +13,6 @@ class CarForm(ModelForm):
             'model',
             'registration_number',
             'status',
-            'description',
             'odometer',
             'price',
             'condition',
@@ -24,22 +20,56 @@ class CarForm(ModelForm):
             'transmission',
             'owner',
             'prev_owner_count',
-            'location'
+            'location',
+            'description',
         )
         labels = {
             'fuel_type': 'Fuel type',
             'prev_owner_count': 'The number of previous owners'
         }
     
-    def clean_year(self):
-        year = self.cleaned_data['year']
+class ModelForm(ModelForm):
+    '''
+    The form to create a new model.
+    '''
+    class Meta:
+        model = Car_Model
+        fields = (
+            'brand',
+            'name',
+        )
 
-        year = str(year) # ensure the data type is string
+class BrandForm(ModelForm):
+    '''
+    The form to create a new car brand
+    '''
+    class Meta:
+        model = Car_Brand
+        fields = (
+            'name',
+        )
 
-        if len(year) != 4:
-            raise ValidationError("Year must have 4 digits")
-        if not re.match("^[0-9]{4}$", year):
-            raise ValidationError("Year must be all digits")
-        
-        return int(year)
-        
+class TranmissionForm(ModelForm):
+    '''
+    The form to create a new transmission type
+    '''
+    class Meta:
+        model = Transmission_Type
+        fields = (
+            'name',
+        )
+
+class FuelForm(ModelForm):
+    class Meta:
+        model = Fuel_Type
+        fields = (
+            'name',
+        )
+
+class CarFileForm(ModelForm):
+    class Meta:
+        model = Car_File
+        fields = (
+            'car',
+            'file',
+        )
