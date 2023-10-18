@@ -1,6 +1,11 @@
+from django.forms.models import BaseModelForm
 from django.shortcuts import render
 from django.http import HttpResponse, Http404
 from django.utils.html import escape
+from django.views.generic import CreateView
+
+from .models import Car
+from .forms import CarForm
 
 APP_NAME = "marketplace_app/"
 
@@ -16,3 +21,8 @@ def signup(request):
 
 def forgotpassword(request):
     return render(request, APP_NAME + 'forgotpassword.html')
+
+class CarCreateView(CreateView):
+    model = Car
+    # TODO The URL redirected after the a new car is created successfully
+    form_class = CarForm

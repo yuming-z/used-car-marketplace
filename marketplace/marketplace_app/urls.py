@@ -6,6 +6,6 @@ urlpatterns = [
     path('index', views.index, name="index"),
     path('login', views.login, name="login"),
     path('signup', views.signup, name="signup"),
-    path('forgotpassword', views.forgotpassword, name="forgotpassword")
-    # path('search', views.search, name="search")
+    path('forgotpassword', views.forgotpassword, name="forgotpassword"),
+    path('upload', views.CarCreateView.as_view(), name="upload-car")
 ]
