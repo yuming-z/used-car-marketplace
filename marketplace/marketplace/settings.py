@@ -31,7 +31,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-SITE_ID = 1 # Could be either 1 or 2. Try the other if one doesn't work.
+SITE_ID = 2 # Could be either 1 or 2. Try the other if one doesn't work.
 
 # Application definition
 
