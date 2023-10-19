@@ -1,8 +1,8 @@
-from django.forms import ModelForm
+from django import forms
 
 from .models import Car, Car_Brand, Car_Model, Car_File, Fuel_Type, Transmission_Type
 
-class CarForm(ModelForm):
+class CarForm(forms.ModelForm):
     '''
     The form to create a new car
     '''
@@ -10,25 +10,25 @@ class CarForm(ModelForm):
         model = Car
         fields = (
             'year',
-            'model',
             'registration_number',
             'status',
             'odometer',
             'price',
             'condition',
-            'fuel_type',
-            'transmission',
             'owner',
             'prev_owner_count',
             'location',
             'description',
+            'model',
+            'fuel_type',
+            'transmission',
         )
         labels = {
             'fuel_type': 'Fuel type',
             'prev_owner_count': 'The number of previous owners'
         }
     
-class ModelForm(ModelForm):
+class ModelForm(forms.ModelForm):
     '''
     The form to create a new model.
     '''
@@ -39,7 +39,7 @@ class ModelForm(ModelForm):
             'name',
         )
 
-class BrandForm(ModelForm):
+class BrandForm(forms.ModelForm):
     '''
     The form to create a new car brand
     '''
@@ -49,7 +49,7 @@ class BrandForm(ModelForm):
             'name',
         )
 
-class TranmissionForm(ModelForm):
+class TranmissionForm(forms.ModelForm):
     '''
     The form to create a new transmission type
     '''
@@ -59,14 +59,14 @@ class TranmissionForm(ModelForm):
             'name',
         )
 
-class FuelForm(ModelForm):
+class FuelForm(forms.ModelForm):
     class Meta:
         model = Fuel_Type
         fields = (
             'name',
         )
 
-class CarFileForm(ModelForm):
+class CarFileForm(forms.ModelForm):
     class Meta:
         model = Car_File
         fields = (
