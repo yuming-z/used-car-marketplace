@@ -176,6 +176,22 @@ img.img-no-resize {
     margin-top: auto;
 }
 
+.center-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* This sets the container to full viewport height */
+}
+
+.confirmation-box {
+    text-align: center;
+    padding: 50px;
+    background-color: white;
+    border-radius: 10px;
+    margin: 0 auto; /* Center the box horizontally */
+    width: 60%; /* Adjust the width as needed */
+}
+
 
 /* Login */
 
@@ -207,7 +223,12 @@ img.img-no-resize {
 }
 
 .form-title {
-    padding-bottom: 5px;
+    padding-top: 5px;
+    margin-bottom: 0rem;
+}
+
+.form-group {
+    padding: 5px;
 }
 
 .form-control {
@@ -239,8 +260,13 @@ img.img-no-resize {
 
 
 /* custom colour for navbar */
-.navbar-custom {
-    background-color: lightsalmon;
+.custom-navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000; /* Ensure it's above other elements */
+    background-color: lightsalmon; /* Customize the background color */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a shadow for separation */
 }
  
 .navbar-custom .navbar-brand,

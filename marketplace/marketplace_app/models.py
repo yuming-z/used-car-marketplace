@@ -22,6 +22,7 @@ class User_Detail(models.Model):
     '''
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user_detail", primary_key=True)
     mobile = models.IntegerField(blank=True, null=True)
+    email_confirmed = models.BooleanField(default=False)
 
     def clean(self) -> None:
         '''
