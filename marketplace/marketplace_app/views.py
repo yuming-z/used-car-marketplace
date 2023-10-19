@@ -41,3 +41,8 @@ class TransmissionCreateView(CreateView):
     model = Transmission_Type
     success_url = 'car'
     form_class = TranmissionForm
+
+class FuelCreateView(CreateView):
+    model = Fuel_Type
+    success_url = 'car'
+    form_class = FuelForm

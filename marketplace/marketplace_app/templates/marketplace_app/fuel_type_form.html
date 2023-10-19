@@ -1,0 +1,13 @@
+{% extends 'marketplace_app/base.html' %}
+
+{% block content %}
+<h1 class="h1 pt-3 ms-4">Create a New Fuel Type</h1>
+
+<form method="post" class="pt-2 ms-4">
+    {% csrf_token %}
+
+    {{ form.as_div }}
+
+    <button type="submit" class="btn btn-primary mt-3">Submit</button>
+</form>
+{% endblock content %}
