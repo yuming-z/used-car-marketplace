@@ -24,5 +24,8 @@ urlpatterns = [
     path('login', include('marketplace_app.urls')),
     path('signup', include('marketplace_app.urls')),
     path('forgotpassword', include('marketplace_app.urls')),
+    path('activate/<uidb64>/<token>/', include('marketplace_app.urls')),
+    path('activate_email_sent', include('marketplace_app.urls')),
+    path('invalid_activation', include('marketplace_app.urls')),
     path('admin/', admin.site.urls),
 ]

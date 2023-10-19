@@ -176,6 +176,22 @@ img.img-no-resize {
     margin-top: auto;
 }
 
+.center-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* This sets the container to full viewport height */
+}
+
+.confirmation-box {
+    text-align: center;
+    padding: 50px;
+    background-color: white;
+    border-radius: 10px;
+    margin: 0 auto; /* Center the box horizontally */
+    width: 60%; /* Adjust the width as needed */
+}
+
 
 /* Login */
 
