@@ -4,8 +4,8 @@ from django.http import HttpResponse, Http404
 from django.utils.html import escape
 from django.views.generic import CreateView
 
-from .models import Car, Car_Model, Car_Brand
-from .forms import CarForm, CarModelForm, CarBrandForm
+from .models import *
+from .forms import *
 
 APP_NAME = "marketplace_app/"
 
@@ -36,3 +36,8 @@ class CarBrandCreateView(CreateView):
     model = Car_Brand
     success_url = 'model'
     form_class = CarBrandForm
+
+class TransmissionCreateView(CreateView):
+    model = Transmission_Type
+    success_url = 'car'
+    form_class = TranmissionForm
