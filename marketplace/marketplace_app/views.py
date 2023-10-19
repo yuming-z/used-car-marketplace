@@ -7,14 +7,18 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth import login, authenticate
 from django.core.mail import send_mail
+from django.forms.models import BaseModelForm
+from django.views.generic import CreateView
 
 from .tokens import account_activation_token
-from .models import User_Detail, User
-from .forms import SignupForm, LoginForm    
+from .models import *
+from .forms import *
+
+APP_NAME = "marketplace_app/"
 
 # Create your views here.
 def index(request):
-    return render(request, 'index.html')
+    return render(request, APP_NAME + 'index.html')
 
 def login_view(request):
     if request.method == 'POST':
@@ -32,7 +36,7 @@ def login_view(request):
     else:
         form = LoginForm()
 
-    return render(request, 'login.html', {'login_form': form})
+    return render(request,  APP_NAME + 'login.html', {'login_form': form})
 
 def activate(request, uidb64, token):
     try:
@@ -56,10 +60,10 @@ def activate(request, uidb64, token):
         return redirect('invalid_activation')
 
 def activate_email_sent(request):
-    return render(request, 'activate_email_sent.html')
+    return render(request,  APP_NAME + 'activate_email_sent.html')
 
 def invalid_activation_view(request):
-    return render(request, 'invalid_activation.html')
+    return render(request,  APP_NAME + 'invalid_activation.html')
 
 def signup_view(request):
     if request.method == 'POST':
@@ -77,7 +81,7 @@ def signup_view(request):
                 # sending email to user to confirm
                 current_site = get_current_site(request)
                 subject = 'Activate Your Carsales Account'
-                message = render_to_string('activate_email.html', {
+                message = render_to_string(APP_NAME + 'activate_email.html', {
                     'user': user,
                     'domain': current_site.domain,
                     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
@@ -95,16 +99,32 @@ def signup_view(request):
     else:
         form = SignupForm()
 
-    return render(request, 'signup.html', {'signup_form': form})
+    return render(request,  APP_NAME + 'signup.html', {'signup_form': form})
 
 def forgotpassword_view(request):
-    return render(request, 'forgotpassword.html')
+    return render(request, APP_NAME + 'forgotpassword.html')
 
-# made for testing purposes
-# def search(request):
-#     try:
-#         # cars = Car.objects.all() # for now, just get all cars, not based on search
-#         fuels = Fuel_Type.objects.all() # TESTING
-#         return render(request, 'search.html', {'fuels': fuels})
-#     except Car.DoesNotExist:
-#         raise Http404("Could not find cars with that search criteria.")
+class CarCreateView(CreateView):
+    model = Car
+    # TODO The URL redirected after the a new car is created successfully
+    form_class = CarForm
+
+class CarModelCreateView(CreateView):
+    model = Car_Model
+    success_url = 'car'
+    form_class = CarModelForm
+
+class CarBrandCreateView(CreateView):
+    model = Car_Brand
+    success_url = 'model'
+    form_class = CarBrandForm
+
+class TransmissionCreateView(CreateView):
+    model = Transmission_Type
+    success_url = 'car'
+    form_class = TranmissionForm
+
+class FuelCreateView(CreateView):
+    model = Fuel_Type
+    success_url = 'car'
+    form_class = FuelForm
