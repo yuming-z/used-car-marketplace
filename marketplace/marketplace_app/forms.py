@@ -65,11 +65,3 @@ class FuelForm(forms.ModelForm):
         fields = (
             'name',
         )
-
-class CarFileForm(forms.ModelForm):
-    class Meta:
-        model = Car_File
-        fields = (
-            'car',
-            'file',
-        )
