@@ -28,7 +28,7 @@ class CarForm(forms.ModelForm):
             'prev_owner_count': 'The number of previous owners'
         }
     
-class ModelForm(forms.ModelForm):
+class CarModelForm(forms.ModelForm):
     '''
     The form to create a new model.
     '''
@@ -39,7 +39,7 @@ class ModelForm(forms.ModelForm):
             'name',
         )
 
-class BrandForm(forms.ModelForm):
+class CarBrandForm(forms.ModelForm):
     '''
     The form to create a new car brand
     '''

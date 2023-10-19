@@ -4,8 +4,8 @@ from django.http import HttpResponse, Http404
 from django.utils.html import escape
 from django.views.generic import CreateView
 
-from .models import Car
-from .forms import CarForm
+from .models import Car, Car_Model
+from .forms import CarForm, CarModelForm
 
 APP_NAME = "marketplace_app/"
 
@@ -26,3 +26,8 @@ class CarCreateView(CreateView):
     model = Car
     # TODO The URL redirected after the a new car is created successfully
     form_class = CarForm
+
+class CarModelCreateView(CreateView):
+    model = Car_Model
+    success_url = 'car'
+    form_class = CarModelForm
