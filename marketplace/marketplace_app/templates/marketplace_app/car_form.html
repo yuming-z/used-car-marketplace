@@ -49,17 +49,20 @@
 
     <div class="mt-3">
         {{ form.model.label_tag }} <br>
-        {{ form.model }}
+        {{ form.model }} <br>
+        <a href="{% url 'create-model' %}" class="btn btn-secondary">Create new model</a>
     </div>
 
     <div class="mt-3">
         {{ form.fuel_type.label_tag }} <br>
-        {{ form.fuel_type }}
+        {{ form.fuel_type }} <br>
+        <a href="{% url 'create-fuel' %}" class="btn btn-secondary">Create new fuel type</a>
     </div>
 
     <div class="mt-3">
         {{ form.transmission.label_tag }} <br>
-        {{ form.transmission }}
+        {{ form.transmission }} <br>
+        <a href="{% url 'create-transmission' %}" class="btn btn-secondary">Create new tranmission type</a>
     </div>
 
     <div class="mt-3">
