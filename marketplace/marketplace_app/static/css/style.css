@@ -223,12 +223,7 @@ img.img-no-resize {
 }
 
 .form-title {
-    padding-top: 5px;
-    margin-bottom: 0rem;
-}
-
-.form-group {
-    padding: 5px;
+    padding-bottom: 5px;
 }
 
 .form-control {
