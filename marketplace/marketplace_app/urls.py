@@ -8,7 +8,12 @@ urlpatterns = [
     # login/signup
     path('login', views.login_view, name="login"),
     path('signup', views.signup_view, name="signup"),
+
+    # forgot/reset password
     path('forgotpassword', views.forgotpassword_view, name="forgotpassword"),
+    path('reset_password/<uidb64>/<token>/', views.resetpassword_view, name="reset_password"),
+    path('reset_email_sent', views.reset_email_sent, name="reset_email_sent"),
+    path('invalid_reset', views.invalid_reset_view, name="invalid_reset"),
 
     # email activation for signup
     path('activate/<uidb64>/<token>/', views.activate, name="activate"),

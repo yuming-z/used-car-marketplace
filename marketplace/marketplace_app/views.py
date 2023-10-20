@@ -10,7 +10,7 @@ from django.core.mail import send_mail
 from django.forms.models import BaseModelForm
 from django.views.generic import CreateView
 
-from .tokens import account_activation_token
+from .tokens import account_activation_token, reset_password_token
 from .models import *
 from .forms import *
 
@@ -55,15 +55,21 @@ def activate(request, uidb64, token):
 
         login(request, user) # Log the user in
         print("User is logged in "+user.username)
-        return redirect('index')
+        return redirect('index', permanent=True)
     else:
         return redirect('invalid_activation')
 
 def activate_email_sent(request):
     return render(request,  APP_NAME + 'activate_email_sent.html')
 
+def reset_email_sent(request):
+    return render(request,  APP_NAME + 'reset_email_sent.html')
+
 def invalid_activation_view(request):
     return render(request,  APP_NAME + 'invalid_activation.html')
+
+def invalid_reset_view(request):
+    return render(request,  APP_NAME + 'invalid_reset.html')
 
 def signup_view(request):
     if request.method == 'POST':
@@ -102,7 +108,64 @@ def signup_view(request):
     return render(request,  APP_NAME + 'signup.html', {'signup_form': form})
 
 def forgotpassword_view(request):
-    return render(request, APP_NAME + 'forgotpassword.html')
+    if request.method == 'POST':
+        form = ForgetPasswordForm(request.POST)
+        if form.is_valid():
+            user = form.get_user()
+
+            if user is not None:
+                current_site = get_current_site(request)
+                subject = 'Reset Your Carsales Account Password'
+                message = render_to_string(APP_NAME + 'reset_password_email.html', {
+                    'user': user,
+                    'domain': current_site.domain,
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                    'token': reset_password_token.make_token(user),
+                })
+                send_mail(subject=subject, message=message, from_email='elec05471@gmail.com', recipient_list=[user.email])
+
+            else:
+                print("Email does not exist")
+
+            return redirect('reset_email_sent')
+
+    else:
+        form = ForgetPasswordForm()
+
+    return render(request, APP_NAME + 'forgotpassword.html', {'forget_form': form})
+
+def resetpassword_view(request, uidb64, token):
+    if request.method == 'POST':
+        form = ResetPasswordForm(request.POST)
+        if form.is_valid():
+            try:
+                uid = force_str(urlsafe_base64_decode(uidb64))
+                user = User.objects.get(pk=uid)
+            except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+                user = None    
+
+            if user is not None and reset_password_token.check_token(user, token):
+                outcome, msg = form.checks_if_old_password(user)
+                if outcome:
+                    form.add_error(None, "Password cannot be the same as your last password")
+                    
+                else:
+                    if msg == "success":
+                        user.set_password(form.clean_password())
+                        user.save()
+                        print("User changed password")
+                        return redirect('login')
+                
+                    elif msg == "matching":
+                        form.add_error(None, "Passwords do not match")
+            
+            else:
+                return redirect('invalid_reset')
+
+    else:
+        form = ResetPasswordForm()
+
+    return render(request, APP_NAME + 'reset_password.html', {'reset_form': form})
 
 class CarCreateView(CreateView):
     model = Car
