@@ -15,6 +15,9 @@ def validate_year(year):
     if year > datetime.now().year:
         raise ValidationError(_("Year cannot be in the future."))
 
+    if year < 1970: # Oldest car model is 1972
+        raise ValidationError(_("Year must be greater than 1970."))
+
 class User_Detail(models.Model):
     '''
     The model to store user details.
