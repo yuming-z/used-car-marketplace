@@ -7,10 +7,18 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth import login, authenticate, get_user_model
 from django.core.mail import send_mail
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms.models import BaseModelForm
 from django.views.generic import CreateView
 from django.db.models import Avg
 from django.conf import settings
+from django.contrib.auth.forms import UserChangeForm
+from django.contrib import messages
+
+# from .forms import UserDetailForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
+from .forms import UserUpdateForm, User_DetailUpdateForm
 
 from .tokens import account_activation_token, reset_password_token
 from .models import *
@@ -111,7 +119,7 @@ def signup_view(request):
                 send_mail(subject=subject, message=message, from_email=settings.EMAIL_HOST_USER, recipient_list=[user.email])
                 return redirect('activate_email_sent')
             
-            else: # either mobile or email already exists
+            else: # if user signs up with number or email that already exists
                 if msg == "mobile":
                     form.add_error(None, "Signup failed. Phone Number already exists.")
                 elif msg == "email":
@@ -122,13 +130,14 @@ def signup_view(request):
 
     return render(request,  APP_NAME + 'signup.html', {'signup_form': form})
 
-# forgetting password
+# user submits email to forget password
 def forgotpassword_view(request):
     if request.method == 'POST':
         form = ForgetPasswordForm(request.POST)
         if form.is_valid():
             user = form.get_user()
 
+            # sends email to user to reset password
             if user is not None:
                 current_site = get_current_site(request)
                 subject = 'Reset Your Carsales Account Password'
@@ -150,17 +159,20 @@ def forgotpassword_view(request):
 
     return render(request, APP_NAME + 'forgotpassword.html', {'forget_form': form})
 
-# page for inputting new password
+# form for inputting new password
 def resetpassword_view(request, uidb64, token):
     if request.method == 'POST':
         form = ResetPasswordForm(request.POST)
         if form.is_valid():
+            # check if link is valid
             try:
                 uid = force_str(urlsafe_base64_decode(uidb64))
                 user = User.objects.get(pk=uid)
             except (TypeError, ValueError, OverflowError, User.DoesNotExist):
                 user = None    
 
+            # update password based on user input
+            # password cannot be the same as previous password
             if user is not None and reset_password_token.check_token(user, token):
                 outcome, msg = form.checks_if_old_password(user)
                 if outcome:
@@ -259,42 +271,140 @@ def rate_buyer_view(request, buyer_id):
             # buyer is not found
             return redirect('error_page')
 
-class CarCreateView(CreateView):
+# single car listing view
+def car_listing_view(request, car_id):
+    try:
+        current_car = get_object_or_404(Car, id=car_id)
+        return render(request, APP_NAME + 'car_listing.html', {'car': current_car})
+    except Http404:
+        return render(request, APP_NAME + 'error_page.html')
+
+# all car listings view
+def car_listings_view(request):
+    all_car_listings = Car.objects.all()
+    # if request.user.is_authenticated: # dont show logged in users listings
+    #     user = request.user
+    #     all_car_listings = all_car_listings.exclude(owner=user)
+
+    return render(request, APP_NAME + 'car_listings.html', {'all_car_listings': all_car_listings})
+
+class CarCreateView(LoginRequiredMixin, CreateView):
     model = Car
-    # TODO The URL redirected after the a new car is created successfully
+    success_url = 'index'
     form_class = CarForm
 
-class CarModelCreateView(CreateView):
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
+
+class CarModelCreateView(LoginRequiredMixin, CreateView):
     model = Car_Model
     success_url = 'car'
     form_class = CarModelForm
 
-class CarBrandCreateView(CreateView):
+class CarBrandCreateView(LoginRequiredMixin, CreateView):
     model = Car_Brand
     success_url = 'model'
     form_class = CarBrandForm
 
-class TransmissionCreateView(CreateView):
+class TransmissionCreateView(LoginRequiredMixin, CreateView):
     model = Transmission_Type
     success_url = 'car'
     form_class = TranmissionForm
 
-class FuelCreateView(CreateView):
+class FuelCreateView(LoginRequiredMixin, CreateView):
     model = Fuel_Type
     success_url = 'car'
     form_class = FuelForm
+
+# def account_update(request):
+#     user_change_form = UserChangeForm(isinstance = request.user)
+#     return render(request, APP_NAME + 'account_update.html', {'form': form})
+
+@login_required
+def account_detail(request):
+        if request.method == "POST":
+            u_form = UserUpdateForm(request.POST, instance=request.user)
+            ud_form = User_DetailUpdateForm(request.POST, instance=request.user.user_detail)
+            # p_form = ProfileUpdateForm(request.POST,
+                                        # request.FILES,
+                                        # instance=request.user.profile)
+            #  if u_form.is_valid() and p_form.is_valid():
+            # if u_form.is_valid() and ud_form.is_valid():
+            u_form.save()
+            # print(ud_form.errors)
+            # ud_form.save()
+            messages.success(request, f'Your account has been updated!')
+            return redirect('account_detail')
+
+        else:
+            u_form = UserUpdateForm(instance=request.user)
+            ud_form = User_DetailUpdateForm(instance=request.user.user_detail)
+            # p_form = ProfileUpdateForm(instance=request.user.profile)
+
+        context = {
+            'u_form': u_form,
+            'ud_form': ud_form
+            # 'p_form': p_form
+        }
+
+        return render(request, APP_NAME + 'account_detail.html', context)
+
+def account_delete(request):
+    if request.method == "POST":
+        request.user.delete()
+        logout(request)
+
+        return redirect('index.html') 
+
+    # If it's a GET request, render a confirmation page
+    return render(request, APP_NAME + 'account_delete_confirm.html')
+
+
+# # Add by me
+# def update_user_detail(request):
+#     try:
+#         user_detail = request.user.user_detail
+#     except User_Detail.DoesNotExist:
+#         user_detail = User_Detail(user=request.user)
+    
+#     user_change_form = UserChangeForm(instance = user_detail)
+
+#     # if request.method == "POST":
+#     #     form = UserDetailForm(request.POST, instance=user_detail)
+#     #     if form.is_valid():
+#     #         form.save()
+#     #         return redirect('base.html') # Replace with appropriate redirect
+#     # else:
+#     #     form = UserDetailForm(instance=user_detail)
+
+#     return render(request, APP_NAME + 'update_detail.html', {'user_change_form':user_change_form})
+    # return render(request,  APP_NAME + 'login.html', {'login_form': form})
+    
+
+    # @login_required
+    # def profile(request):
+    #     u_form = UserUpdateForm()
+    #     p_form = ProfileUpdateForm()
+
+    #     context = {
+    #         'u_form': u_form,
+    #         'p_form': p_form
+    #     }
+
+    #     return render(request, APP_NAME + 'user_detail.html', context)
     
 def create_listing(request):
     if request.method == 'POST':
-        form = ListingForm(request.POST)
+        form = CarForm(request.POST)
         if form.is_valid():
             listing = form.save(commit=False)
             listing.owner = request.user
             listing.save()
             return redirect('listing_detail', listing_id=listing.id)
     else:
-        form = ListingForm()
-    return render(request, 'create_listing.html', {'form': form})
+        form = CarForm()
+    return render(request, APP_NAME + 'car_form.html', {'form': form})
 
 def edit_listing(request, listing_id):
     listing = get_object_or_404(Listing, id=listing_id)
@@ -313,7 +423,6 @@ def edit_listing(request, listing_id):
 def listing_detail(request, listing_id):
     listing = get_object_or_404(Listing, id=listing_id)
     return render(request, 'listing_detail.html', {'listing': listing})
-
 
 def delete_listing(request, listing_id):
     listing = get_object_or_404(Listing, id=listing_id)

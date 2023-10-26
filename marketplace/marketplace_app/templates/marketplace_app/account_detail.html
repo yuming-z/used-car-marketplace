@@ -1,0 +1,49 @@
+{% extends "marketplace_app/base_account.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+
+<style type="text/css">
+
+  .wrap_content {
+    margin-top: 70px;
+    margin-left: 210px;
+    margin-right: 10px;
+  }
+
+  ul {
+    list-style:none;
+    list-style-position: outside;
+  }
+
+  body {
+    margin: 0px;
+    /* background-color: #F0EDCC; */
+  }
+
+</style>
+
+<div class="wrap_content"> 
+<h2>Account Details</h2>
+<p><strong>Username:</strong> {{ user.username }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>Mobile:</strong> {{ user.user_detail.mobile }}</p>
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <fieldset class="form_group">
+        <legend class="border-botton mb-4">Account Info</legend>
+        {{u_form|crispy}}
+        {{ud_form|crispy}}
+      </fieldset>
+      <div class="form_gorup">
+        <button class="btn btn-online-info" type="submit">Form Udapte</button>
+      </div>
+    </form>
+  <form method="POST" action="{% url 'account_delete' %}" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
+    {% csrf_token %}
+    <button type="submit">Delete</button>
+  </form>
+</div>
+
+</div>
+{% endblock %}

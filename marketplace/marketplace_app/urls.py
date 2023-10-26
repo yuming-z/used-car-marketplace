@@ -9,7 +9,13 @@ urlpatterns = [
     # login/signup
     path('login', views.login_view, name="login"),
     path('signup', views.signup_view, name="signup"),
-
+    
+    # path('update_detail', views.update_user_detail, name='update_user_detail'),
+    # path('update_user_detail', views.update_user_detail, name='update_user_detail'),
+    #path('user_detail', views.update_user_detail, name='update_user_detail'),
+    # path('logout', views.logout_view, name='logout'),
+    path('account_delete', views.account_delete, name='account_delete'),
+    
     # forgot/reset password
     path('forgotpassword', views.forgotpassword_view, name="forgotpassword"),
     path('reset_password/<uidb64>/<token>/', views.resetpassword_view, name="reset_password"),
@@ -25,6 +31,8 @@ urlpatterns = [
     path('rating_seller/<int:seller_id>/', views.rate_seller_view, name='rating_seller'),
     path('rating_buyer/<int:buyer_id>/', views.rate_buyer_view, name="rating_buyer"),
     path('confirm_rating', views.confirm_rating_view, name="confirm_rating"),
+
+    path('account_detail', views.account_detail, name='account_detail'),
     
     # car creations
     path('car', views.CarCreateView.as_view(), name="create-car"),
@@ -32,6 +40,8 @@ urlpatterns = [
     path('brand', views.CarBrandCreateView.as_view(), name="create-brand"),
     path('transmission', views.TransmissionCreateView.as_view(), name="create-transmission"),
     path("fuel", views.FuelCreateView.as_view(), name="create-fuel"),
+    path("car_listings", views.car_listings_view, name="car_listings"),
+    path('car_listing/<int:car_id>/', views.car_listing_view, name='car_listing'),
     
     #edit lists
     path('create_listing/', views.create_listing, name='create_listing'),
