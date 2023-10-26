@@ -167,6 +167,10 @@ def resetpassword_view(request, uidb64, token):
 
     return render(request, APP_NAME + 'reset_password.html', {'reset_form': form})
 
+def car_listings_view(request):
+    all_car_listings = Car.objects.all()
+    return render(request, APP_NAME + 'car_listings.html', {'all_car_listings': all_car_listings})
+
 class CarCreateView(CreateView):
     model = Car
     # TODO The URL redirected after the a new car is created successfully
