@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.http import HttpResponse, Http404
@@ -7,10 +7,10 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth import login, authenticate
 from django.core.mail import send_mail
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms.models import BaseModelForm
 from django.views.generic import CreateView
 from django.contrib.auth.forms import UserChangeForm
-from .models import User_Detail
 from django.contrib import messages
 
 # from .forms import UserDetailForm
@@ -28,6 +28,7 @@ APP_NAME = "marketplace_app/"
 def index(request):
     return render(request, APP_NAME + 'index.html')
 
+# log in
 def login_view(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
@@ -50,6 +51,8 @@ def logout_view(request):
     logout(request)
     return redirect('index')
 
+# activating sign up verification link from email
+# then logs user in
 def activate(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
@@ -83,6 +86,8 @@ def invalid_activation_view(request):
 def invalid_reset_view(request):
     return render(request,  APP_NAME + 'invalid_reset.html')
 
+# sign up process
+# includes confirming verification email
 def signup_view(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
@@ -90,7 +95,7 @@ def signup_view(request):
             
             user, msg = form.save(commit=False)    
             if user is not None:
-                print("Signup works")
+                # print("Signup works")
                 user.is_active = False 
                 user.save()
 
@@ -108,7 +113,7 @@ def signup_view(request):
                 send_mail(subject=subject, message=message, from_email='elec05471@gmail.com', recipient_list=[user.email])
                 return redirect('activate_email_sent')
             
-            else:
+            else: # if user signs up with number or email that already exists
                 if msg == "mobile":
                     form.add_error(None, "Signup failed. Phone Number already exists.")
                 elif msg == "email":
@@ -119,12 +124,14 @@ def signup_view(request):
 
     return render(request,  APP_NAME + 'signup.html', {'signup_form': form})
 
+# user submits email to forget password
 def forgotpassword_view(request):
     if request.method == 'POST':
         form = ForgetPasswordForm(request.POST)
         if form.is_valid():
             user = form.get_user()
 
+            # sends email to user to reset password
             if user is not None:
                 current_site = get_current_site(request)
                 subject = 'Reset Your Carsales Account Password'
@@ -146,16 +153,20 @@ def forgotpassword_view(request):
 
     return render(request, APP_NAME + 'forgotpassword.html', {'forget_form': form})
 
+# form for inputting new password
 def resetpassword_view(request, uidb64, token):
     if request.method == 'POST':
         form = ResetPasswordForm(request.POST)
         if form.is_valid():
+            # check if link is valid
             try:
                 uid = force_str(urlsafe_base64_decode(uidb64))
                 user = User.objects.get(pk=uid)
             except (TypeError, ValueError, OverflowError, User.DoesNotExist):
                 user = None    
 
+            # update password based on user input
+            # password cannot be the same as previous password
             if user is not None and reset_password_token.check_token(user, token):
                 outcome, msg = form.checks_if_old_password(user)
                 if outcome:
@@ -179,27 +190,48 @@ def resetpassword_view(request, uidb64, token):
 
     return render(request, APP_NAME + 'reset_password.html', {'reset_form': form})
 
-class CarCreateView(CreateView):
+# single car listing view
+def car_listing_view(request, car_id):
+    try:
+        current_car = get_object_or_404(Car, id=car_id)
+        return render(request, APP_NAME + 'car_listing.html', {'car': current_car})
+    except Http404:
+        return render(request, APP_NAME + 'error_page.html')
+
+# all car listings view
+def car_listings_view(request):
+    all_car_listings = Car.objects.all()
+    # if request.user.is_authenticated: # dont show logged in users listings
+    #     user = request.user
+    #     all_car_listings = all_car_listings.exclude(owner=user)
+
+    return render(request, APP_NAME + 'car_listings.html', {'all_car_listings': all_car_listings})
+
+class CarCreateView(LoginRequiredMixin, CreateView):
     model = Car
-    # TODO The URL redirected after the a new car is created successfully
+    success_url = 'index'
     form_class = CarForm
 
-class CarModelCreateView(CreateView):
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
+
+class CarModelCreateView(LoginRequiredMixin, CreateView):
     model = Car_Model
     success_url = 'car'
     form_class = CarModelForm
 
-class CarBrandCreateView(CreateView):
+class CarBrandCreateView(LoginRequiredMixin, CreateView):
     model = Car_Brand
     success_url = 'model'
     form_class = CarBrandForm
 
-class TransmissionCreateView(CreateView):
+class TransmissionCreateView(LoginRequiredMixin, CreateView):
     model = Transmission_Type
     success_url = 'car'
     form_class = TranmissionForm
 
-class FuelCreateView(CreateView):
+class FuelCreateView(LoginRequiredMixin, CreateView):
     model = Fuel_Type
     success_url = 'car'
     form_class = FuelForm
@@ -280,3 +312,43 @@ def account_delete(request):
     #     }
 
     #     return render(request, APP_NAME + 'user_detail.html', context)
+    
+def create_listing(request):
+    if request.method == 'POST':
+        form = CarForm(request.POST)
+        if form.is_valid():
+            listing = form.save(commit=False)
+            listing.owner = request.user
+            listing.save()
+            return redirect('listing_detail', listing_id=listing.id)
+    else:
+        form = CarForm()
+    return render(request, APP_NAME + 'car_form.html', {'form': form})
+
+def edit_listing(request, listing_id):
+    listing = get_object_or_404(Listing, id=listing_id)
+    if request.user != listing.owner:
+        return HttpResponse("Permission Denied")
+    
+    if request.method == 'POST':
+        form = ListingForm(request.POST, instance=listing)
+        if form.is_valid():
+            form.save()
+            return redirect('listing_detail', listing_id=listing.id)
+    else:
+        form = ListingForm(instance=listing)
+    return render(request, 'edit_listing.html', {'form': form, 'listing': listing})
+
+def listing_detail(request, listing_id):
+    listing = get_object_or_404(Listing, id=listing_id)
+    return render(request, 'listing_detail.html', {'listing': listing})
+
+def delete_listing(request, listing_id):
+    listing = get_object_or_404(Listing, id=listing_id)
+    if request.user != listing.owner:
+        return HttpResponse("Permission Denied")
+    
+    if request.method == 'POST':
+        listing.delete()
+        return redirect('listings')  
+

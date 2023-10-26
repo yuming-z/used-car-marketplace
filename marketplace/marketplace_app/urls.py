@@ -27,10 +27,20 @@ urlpatterns = [
     path('invalid_activation', views.invalid_activation_view, name="invalid_activation"),
 
     path('account_detail', views.account_detail, name='account_detail'),
+    
     # car creations
     path('car', views.CarCreateView.as_view(), name="create-car"),
     path('model', views.CarModelCreateView.as_view(), name="create-model"),
     path('brand', views.CarBrandCreateView.as_view(), name="create-brand"),
     path('transmission', views.TransmissionCreateView.as_view(), name="create-transmission"),
     path("fuel", views.FuelCreateView.as_view(), name="create-fuel"),
+    path("car_listings", views.car_listings_view, name="car_listings"),
+    path('car_listing/<int:car_id>/', views.car_listing_view, name='car_listing'),
+    
+    #edit lists
+    path('create_listing/', views.create_listing, name='create_listing'),
+    path('edit_listing/<int:listing_id>/', views.edit_listing, name='edit_listing'),
+    path('delete_listing/<int:listing_id>/', views.delete_listing, name='delete_listing'),
+    path('listing_detail/<int:listing_id>/', views.listing_detail, name='listing_detail'),
 ]
+

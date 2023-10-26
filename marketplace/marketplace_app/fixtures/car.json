@@ -1,0 +1,117 @@
+[
+    {
+        "model": "marketplace_app.Car",
+        "pk": 1,
+        "fields":{
+            "year": 2015,
+            "model": ["Mazda 3"],
+            "registration_number": "BTY63L",
+            "status": "AVAILABLE",
+            "description": "Selling bcuz i need $$$",
+            "odometer": 18433,
+            "price": 15000,
+            "condition": "EXCELLENT",
+            "fuel_type": ["Petrol"],
+            "transmission": ["Automatic"],
+            "owner": 1,
+            "prev_owner_count": 2,
+            "location": "University of Sydney, Sydney, Australia"
+        }
+    },
+    {
+        "model": "marketplace_app.Car",
+        "pk": 2,
+        "fields":{
+            "year": 2015,
+            "model": ["Mazda CX-30"],
+            "registration_number": "BTY67U",
+            "status": "AVAILABLE",
+            "description": "Selling bcuz i need $$$",
+            "odometer": 59822,
+            "price": 23000,
+            "condition": "EXCELLENT",
+            "fuel_type": ["Petrol"],
+            "transmission": ["Automatic"],
+            "owner": 2,
+            "prev_owner_count": 2,
+            "location": "University of Sydney, Sydney, Australia"
+        }
+    },
+    {
+        "model": "marketplace_app.Car",
+        "pk": 3,
+        "fields":{
+            "year": 2021,
+            "model": ["Swift"],
+            "registration_number": "BTY69U",
+            "status": "AVAILABLE",
+            "description": "Selling bcuz i need $$$",
+            "odometer": 122222,
+            "price": 269000,
+            "condition": "EXCELLENT",
+            "fuel_type": ["Petrol"],
+            "transmission": ["Automatic"],
+            "owner": 1,
+            "prev_owner_count": 3,
+            "location": "University of Sydney, Sydney, Australia"
+        }
+    },
+    {
+        "model": "marketplace_app.Car",
+        "pk": 4,
+        "fields":{
+            "year": 2023,
+            "model": ["Model Y"],
+            "registration_number": "GYT56U",
+            "status": "AVAILABLE",
+            "description": "Selling bcuz i need $$$",
+            "odometer": 46788,
+            "price": 49000,
+            "condition": "POOR",
+            "fuel_type": ["Electric"],
+            "transmission": ["Automatic"],
+            "owner": 2,
+            "prev_owner_count": 3,
+            "location": "University of Sydney, Sydney, Australia"
+        }
+    },
+    {
+        "model": "marketplace_app.Car",
+        "pk": 5,
+        "fields":{
+            "year": 2013,
+            "model": ["Model X"],
+            "registration_number": "GID56U",
+            "status": "SOLD",
+            "description": "Selling bcuz i need $$$",
+            "odometer": 86688,
+            "price": 33500,
+            "condition": "FAIR",
+            "fuel_type": ["Electric"],
+            "transmission": ["Automatic"],
+            "owner": 4,
+            "prev_owner_count": 3,
+            "location": "University of Sydney, Sydney, Australia"
+        }
+    },
+    {
+        "model": "marketplace_app.Car",
+        "pk": 6,
+        "fields":{
+            "year": 2017,
+            "model": ["Corolla"],
+            "registration_number": "GST56U",
+            "status": "PENDING",
+            "description": "Selling bcuz i need $$$",
+            "odometer": 35673,
+            "price": 22345,
+            "condition": "POOR",
+            "fuel_type": ["Petrol"],
+            "transmission": ["Automatic"],
+            "owner": 5,
+            "prev_owner_count": 2,
+            "location": "University of Sydney, Sydney, Australia"
+
+        }
+    }
+]

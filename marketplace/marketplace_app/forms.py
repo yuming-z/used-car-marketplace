@@ -4,19 +4,24 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError  
 from .models import User_Detail
 
-from .models import Car, Car_Brand, Car_Model, Car_File, Fuel_Type, Transmission_Type, User_Detail
+from .models import Car, Car_Brand, Car_Model, Car_File, Fuel_Type, Transmission_Type, User_Detail, Listing
 
 class ResetPasswordForm(forms.Form):
+    '''
+    The form to reset password for the current user
+    '''
     password1 = forms.CharField(label='Enter New Password', required=True, widget=forms.TextInput(attrs={ "placeholder": "password", "type":"password", "class": "form-control"}))  
     password2 = forms.CharField(label='Confirm New Password', required=True, widget=forms.TextInput(attrs={ "placeholder": "confirm password", "type":"password", "class": "form-control"}))  
 
-    def clean_password(self):  
+    # checks if passwords match or not
+    def clean_password(self): 
         password1 = self.cleaned_data['password1']  
         password2 = self.cleaned_data['password2']  
         if password1 and password2 and password1 != password2:  
             raise ValidationError("Password don't match")  
         return password2   
     
+    # checks if password matches old password or not
     def checks_if_old_password(self, user):
         try:
             password = self.clean_password()
@@ -26,14 +31,19 @@ class ResetPasswordForm(forms.Form):
             return False, "matching"
 
 class ForgetPasswordForm(forms.Form):
+    '''
+    The form to submit a new password reset
+    '''
     email = forms.EmailField(label="Email", max_length=254, required=True, widget=forms.TextInput({"placeholder": "example@email.com", "class": "form-control"}))
 
+    # checks if email is valid and there is a user registered with it
     def email_exists(self):
         email = self.cleaned_data['email'].lower()  
         if not User.objects.filter(email=email).exists():
             raise ValidationError("Email does not exist")
         return email 
     
+    # returns the user with the given email
     def get_user(self):
         try:
             user = User.objects.filter(email=self.email_exists()).first()
@@ -42,10 +52,16 @@ class ForgetPasswordForm(forms.Form):
         return user
 
 class LoginForm(forms.Form):
+    '''
+    The form to login with an existing user
+    '''
     email = forms.EmailField(label="Email", max_length=254, required=True, widget=forms.TextInput({"placeholder": "example@email.com", "class": "form-control"}))
     password = forms.CharField(label='Password', required=True, widget=forms.TextInput({ "placeholder": "password", "type": "password", "class": "form-control"}))
 
 class SignupForm(UserCreationForm):
+    '''
+    The form to sign up and create a new user
+    '''
     email = forms.EmailField(label="Email", max_length=254, required=True, widget=forms.TextInput(attrs={ "placeholder": "example@email.com", "type":"email", "class": "form-control"}))
     number = forms.IntegerField(label="Mobile Number", required=True, widget=forms.TextInput(attrs={ "placeholder": "0444444444", "type":"tel", "pattern":"04[0-9]{2}[0-9]{3}[0-9]{3}", "class": "form-control"}))
     first_name = forms.CharField(label='First Name', required=True, min_length=1, max_length=150, widget=forms.TextInput(attrs={ "placeholder": "John", "class": "form-control"}))  
@@ -57,6 +73,7 @@ class SignupForm(UserCreationForm):
         model = User
         fields = ("email", "password1", "password2", "first_name", "last_name", "number")
 
+    # saves the user and returns any error messages
     def save(self, commit=True):
         user = super(SignupForm, self).save(commit=False)
         try:
@@ -113,7 +130,6 @@ class CarForm(forms.ModelForm):
             'odometer',
             'price',
             'condition',
-            'owner',
             'prev_owner_count',
             'location',
             'description',
@@ -158,6 +174,9 @@ class TranmissionForm(forms.ModelForm):
         )
 
 class FuelForm(forms.ModelForm):
+    '''
+    The form to create a fuel type
+    '''
     class Meta:
         model = Fuel_Type
         fields = (
@@ -178,3 +197,14 @@ class User_DetailUpdateForm(forms.ModelForm):
         model = User_Detail
         fields = ['city_address']
 
+        
+class ListingForm(forms.ModelForm):
+    class Meta:
+        model = Listing
+        fields = ['title', 'description', 'price', 'status']
+        labels = {
+            'title': 'Listing Title',
+            'description': 'Listing Description',
+            'price': 'Listing Price',
+            'status': 'Listing Status',
+        }
