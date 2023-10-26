@@ -9,6 +9,7 @@ from django.contrib.auth import login, authenticate
 from django.core.mail import send_mail
 from django.forms.models import BaseModelForm
 from django.views.generic import CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .tokens import account_activation_token, reset_password_token
 from .models import *
@@ -167,46 +168,61 @@ def resetpassword_view(request, uidb64, token):
 
     return render(request, APP_NAME + 'reset_password.html', {'reset_form': form})
 
+def car_listing_view(request, car_id):
+    try:
+        current_car = get_object_or_404(Car, id=car_id)
+        return render(request, APP_NAME + 'car_listing.html', {'car': current_car})
+    except Http404:
+        return render(request, APP_NAME + 'error_page.html')
+
 def car_listings_view(request):
     all_car_listings = Car.objects.all()
+    # if request.user.is_authenticated: # dont show logged in users listings
+    #     user = request.user
+    #     all_car_listings = all_car_listings.exclude(owner=user)
+
     return render(request, APP_NAME + 'car_listings.html', {'all_car_listings': all_car_listings})
 
-class CarCreateView(CreateView):
+class CarCreateView(LoginRequiredMixin, CreateView):
     model = Car
-    # TODO The URL redirected after the a new car is created successfully
+    success_url = 'index'
     form_class = CarForm
 
-class CarModelCreateView(CreateView):
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
+
+class CarModelCreateView(LoginRequiredMixin, CreateView):
     model = Car_Model
     success_url = 'car'
     form_class = CarModelForm
 
-class CarBrandCreateView(CreateView):
+class CarBrandCreateView(LoginRequiredMixin, CreateView):
     model = Car_Brand
     success_url = 'model'
     form_class = CarBrandForm
 
-class TransmissionCreateView(CreateView):
+class TransmissionCreateView(LoginRequiredMixin, CreateView):
     model = Transmission_Type
     success_url = 'car'
     form_class = TranmissionForm
 
-class FuelCreateView(CreateView):
+class FuelCreateView(LoginRequiredMixin, CreateView):
     model = Fuel_Type
     success_url = 'car'
     form_class = FuelForm
     
 def create_listing(request):
     if request.method == 'POST':
-        form = ListingForm(request.POST)
+        form = CarForm(request.POST)
         if form.is_valid():
             listing = form.save(commit=False)
             listing.owner = request.user
             listing.save()
             return redirect('listing_detail', listing_id=listing.id)
     else:
-        form = ListingForm()
-    return render(request, 'create_listing.html', {'form': form})
+        form = CarForm()
+    return render(request, APP_NAME + 'car_form.html', {'form': form})
 
 def edit_listing(request, listing_id):
     listing = get_object_or_404(Listing, id=listing_id)
@@ -225,7 +241,6 @@ def edit_listing(request, listing_id):
 def listing_detail(request, listing_id):
     listing = get_object_or_404(Listing, id=listing_id)
     return render(request, 'listing_detail.html', {'listing': listing})
-
 
 def delete_listing(request, listing_id):
     listing = get_object_or_404(Listing, id=listing_id)
