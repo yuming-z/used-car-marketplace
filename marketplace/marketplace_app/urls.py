@@ -32,4 +32,11 @@ urlpatterns = [
     path('brand', views.CarBrandCreateView.as_view(), name="create-brand"),
     path('transmission', views.TransmissionCreateView.as_view(), name="create-transmission"),
     path("fuel", views.FuelCreateView.as_view(), name="create-fuel"),
+    
+    #edit lists
+    path('create_listing/', views.create_listing, name='create_listing'),
+    path('edit_listing/<int:listing_id>/', views.edit_listing, name='edit_listing'),
+    path('delete_listing/<int:listing_id>/', views.delete_listing, name='delete_listing'),
+    path('listing_detail/<int:listing_id>/', views.listing_detail, name='listing_detail'),
 ]
+

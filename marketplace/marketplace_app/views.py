@@ -283,3 +283,44 @@ class FuelCreateView(CreateView):
     model = Fuel_Type
     success_url = 'car'
     form_class = FuelForm
+    
+def create_listing(request):
+    if request.method == 'POST':
+        form = ListingForm(request.POST)
+        if form.is_valid():
+            listing = form.save(commit=False)
+            listing.owner = request.user
+            listing.save()
+            return redirect('listing_detail', listing_id=listing.id)
+    else:
+        form = ListingForm()
+    return render(request, 'create_listing.html', {'form': form})
+
+def edit_listing(request, listing_id):
+    listing = get_object_or_404(Listing, id=listing_id)
+    if request.user != listing.owner:
+        return HttpResponse("Permission Denied")
+    
+    if request.method == 'POST':
+        form = ListingForm(request.POST, instance=listing)
+        if form.is_valid():
+            form.save()
+            return redirect('listing_detail', listing_id=listing.id)
+    else:
+        form = ListingForm(instance=listing)
+    return render(request, 'edit_listing.html', {'form': form, 'listing': listing})
+
+def listing_detail(request, listing_id):
+    listing = get_object_or_404(Listing, id=listing_id)
+    return render(request, 'listing_detail.html', {'listing': listing})
+
+
+def delete_listing(request, listing_id):
+    listing = get_object_or_404(Listing, id=listing_id)
+    if request.user != listing.owner:
+        return HttpResponse("Permission Denied")
+    
+    if request.method == 'POST':
+        listing.delete()
+        return redirect('listings')  
+
