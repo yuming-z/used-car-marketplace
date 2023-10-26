@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError  
 
-from .models import Car, Car_Brand, Car_Model, Car_File, Fuel_Type, Transmission_Type, User_Detail
+from .models import Car, Car_Brand, Car_Model, Car_File, Fuel_Type, Transmission_Type, User_Detail, Listing
 
 class ResetPasswordForm(forms.Form):
     password1 = forms.CharField(label='Enter New Password', required=True, widget=forms.TextInput(attrs={ "placeholder": "password", "type":"password", "class": "form-control"}))  
@@ -160,3 +160,14 @@ class FuelForm(forms.ModelForm):
         fields = (
             'name',
         )
+        
+class ListingForm(forms.ModelForm):
+    class Meta:
+        model = Listing
+        fields = ['title', 'description', 'price', 'status']
+        labels = {
+            'title': 'Listing Title',
+            'description': 'Listing Description',
+            'price': 'Listing Price',
+            'status': 'Listing Status',
+        }
