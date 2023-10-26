@@ -1,0 +1,29 @@
+{% extends 'marketplace_app/base.html' %}
+
+{% block content %}
+<h1 class="h1 pt-3 ms-4">Create A New Car Model</h1>
+
+<form method="post" class="pt-3 ms-4">
+    {% csrf_token %}
+
+    <div class="mt-3">
+        {{ form.brand.label_tag }} <br>
+        {{ form.brand }} <br>
+        <a href="{% url 'create-brand' %}" class="btn btn-secondary">Create a new brand</a>
+    </div>
+
+    <div class="mt-3">
+        {{ form.name.label_tag }} <br>
+        {{ form.name }}
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Submit</button>
+</form>
+
+{% if form.errors %}
+<div class="alert alert-danger my-5">
+    {{ form.errors.title.as_text}}
+</div>
+{% endif %}
+
+{% endblock content %}

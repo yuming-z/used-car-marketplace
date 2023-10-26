@@ -17,9 +17,22 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+admin.site.site_header = "Car Marketplace Admin Board"
+admin.site.index_title = "We Aim To Be The Best Luxury Car Marketplace"
 
 urlpatterns = [
+    path('admin/', admin.site.urls),
     path('', include('marketplace_app.urls')),
     path('accounts/', include('allauth.urls')),
     path('admin/', admin.site.urls),
+    path('index', include('marketplace_app.urls')),
+    path('login/', include('marketplace_app.urls')),
+    path('signup', include('marketplace_app.urls')),
+    path('forgotpassword', include('marketplace_app.urls')),
+    path('reset_password/<uidb64>/<token>/', include('marketplace_app.urls')),
+    path('reset_email_sent', include('marketplace_app.urls')),
+    path('invalid_reset', include('marketplace_app.urls')),
+    path('activate/<uidb64>/<token>/', include('marketplace_app.urls')),
+    path('activate_email_sent', include('marketplace_app.urls')),
+    path('invalid_activation', include('marketplace_app.urls')),
 ]

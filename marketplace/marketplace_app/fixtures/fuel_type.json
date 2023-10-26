@@ -1,0 +1,23 @@
+[
+    {
+        "model": "marketplace_app.Fuel_Type",
+        "pk": 1,
+        "fields":{
+            "name": "Petrol"
+        }
+    },
+    {
+        "model": "marketplace_app.Fuel_Type",
+        "pk": 2,
+        "fields":{
+            "name": "Dissel"
+        }
+    },
+    {
+        "model": "marketplace_app.Fuel_Type",
+        "pk": 3,
+        "fields":{
+            "name": "Electric"
+        }
+    }
+]
