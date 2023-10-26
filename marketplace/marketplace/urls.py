@@ -14,8 +14,11 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path, include
+from marketplace_app import views
+
 
 
 urlpatterns = [
@@ -32,4 +35,5 @@ urlpatterns = [
     path('activate/<uidb64>/<token>/', include('marketplace_app.urls')),
     path('activate_email_sent', include('marketplace_app.urls')),
     path('invalid_activation', include('marketplace_app.urls')),
+    path('listings/', views.listings, name='listings'),
 ]
