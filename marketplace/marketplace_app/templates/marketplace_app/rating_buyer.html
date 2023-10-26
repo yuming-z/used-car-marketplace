@@ -1,24 +1,23 @@
 {% extends 'marketplace_app/base.html' %}
 
 {% block title %}
-Rate Seller
+Rate Buyer
 {% endblock title %}
 
 {% block content %}
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-6 offset-md-3">
-            <h2>Rate Your Experience with {{ seller.first_name }}</h2>
+            <h2>Rate Your Experience with {{ buyer.first_name }}</h2>
             <div class="seller-details">
                 <div class="seller-info">
                     <div class="seller-rating">Current Rating: {{ average_rating|default:"0" }} out of 5 stars</div>
-                    <div class="seller-location">Car: blah</div>
                 </div>
                 <div class="car-image">
                     <img class="fit-in-box" src="https://images.cars.com/in/v2/stock_photos/7f212472-c429-4681-882b-29e52f4d52b5/884b28bd-d67f-4c90-a7e5-a066090db8f7.png?w=1000" alt="Purchased Car">
                 </div>
             </div>
-            <form action="{% url 'rating_seller' seller_id=seller.id %}" method="post">
+            <form action="{% url 'rating_buyer' buyer_id=buyer.id %}" method="post">
                 {% csrf_token %}
                 <div class="rating-container mt-5">
                     <span class="star" data-rating="1" name="rating" data-description="Very Bad">&#9733;</span>

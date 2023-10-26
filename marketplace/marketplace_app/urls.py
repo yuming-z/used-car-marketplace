@@ -4,6 +4,7 @@ from . import views
 urlpatterns = [
     path('', views.index, name="index"),
     path('index', views.index, name="index"),
+    path('error_page', views.error_page_view, name="error_page"),
 
     # login/signup
     path('login', views.login_view, name="login"),
@@ -21,9 +22,10 @@ urlpatterns = [
     path('invalid_activation', views.invalid_activation_view, name="invalid_activation"),
 
     # ratings
-    path('rating_seller', views.rate_seller_view, name="rating_seller"),
+    path('rating_seller/<int:seller_id>/', views.rate_seller_view, name='rating_seller'),
+    path('rating_buyer/<int:buyer_id>/', views.rate_buyer_view, name="rating_buyer"),
     path('confirm_rating', views.confirm_rating_view, name="confirm_rating"),
-
+    
     # car creations
     path('car', views.CarCreateView.as_view(), name="create-car"),
     path('model', views.CarModelCreateView.as_view(), name="create-model"),
