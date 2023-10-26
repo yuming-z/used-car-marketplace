@@ -28,6 +28,7 @@ APP_NAME = "marketplace_app/"
 def index(request):
     return render(request, APP_NAME + 'index.html')
 
+# log in
 def login_view(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
@@ -50,6 +51,8 @@ def logout_view(request):
     logout(request)
     return redirect('index')
 
+# activating sign up verification link from email
+# then logs user in
 def activate(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
@@ -83,6 +86,8 @@ def invalid_activation_view(request):
 def invalid_reset_view(request):
     return render(request,  APP_NAME + 'invalid_reset.html')
 
+# sign up process
+# includes confirming verification email
 def signup_view(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
@@ -90,7 +95,7 @@ def signup_view(request):
             
             user, msg = form.save(commit=False)    
             if user is not None:
-                print("Signup works")
+                # print("Signup works")
                 user.is_active = False 
                 user.save()
 
@@ -108,7 +113,7 @@ def signup_view(request):
                 send_mail(subject=subject, message=message, from_email='elec05471@gmail.com', recipient_list=[user.email])
                 return redirect('activate_email_sent')
             
-            else:
+            else: # if user signs up with number or email that already exists
                 if msg == "mobile":
                     form.add_error(None, "Signup failed. Phone Number already exists.")
                 elif msg == "email":
@@ -119,12 +124,14 @@ def signup_view(request):
 
     return render(request,  APP_NAME + 'signup.html', {'signup_form': form})
 
+# user submits email to forget password
 def forgotpassword_view(request):
     if request.method == 'POST':
         form = ForgetPasswordForm(request.POST)
         if form.is_valid():
             user = form.get_user()
 
+            # sends email to user to reset password
             if user is not None:
                 current_site = get_current_site(request)
                 subject = 'Reset Your Carsales Account Password'
@@ -146,16 +153,20 @@ def forgotpassword_view(request):
 
     return render(request, APP_NAME + 'forgotpassword.html', {'forget_form': form})
 
+# form for inputting new password
 def resetpassword_view(request, uidb64, token):
     if request.method == 'POST':
         form = ResetPasswordForm(request.POST)
         if form.is_valid():
+            # check if link is valid
             try:
                 uid = force_str(urlsafe_base64_decode(uidb64))
                 user = User.objects.get(pk=uid)
             except (TypeError, ValueError, OverflowError, User.DoesNotExist):
                 user = None    
 
+            # update password based on user input
+            # password cannot be the same as previous password
             if user is not None and reset_password_token.check_token(user, token):
                 outcome, msg = form.checks_if_old_password(user)
                 if outcome:
@@ -179,6 +190,7 @@ def resetpassword_view(request, uidb64, token):
 
     return render(request, APP_NAME + 'reset_password.html', {'reset_form': form})
 
+# single car listing view
 def car_listing_view(request, car_id):
     try:
         current_car = get_object_or_404(Car, id=car_id)
@@ -186,6 +198,7 @@ def car_listing_view(request, car_id):
     except Http404:
         return render(request, APP_NAME + 'error_page.html')
 
+# all car listings view
 def car_listings_view(request):
     all_car_listings = Car.objects.all()
     # if request.user.is_authenticated: # dont show logged in users listings
