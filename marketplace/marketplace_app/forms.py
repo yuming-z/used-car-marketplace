@@ -63,6 +63,8 @@ class SignupForm(UserCreationForm):
             user.email = self.email_exists()
             user.number = self.number_exists()
             user.username = self.first_name  # Set username to email
+            user.first_name = self.first_name
+            user.last_nameb = self.last_name
             if commit:
                 user.save()
             return user, ""
@@ -163,16 +165,16 @@ class FuelForm(forms.ModelForm):
         )
 
 class UserUpdateForm(forms.ModelForm):
-    username = forms.CharField()
+    # username = forms.CharField()
     email = forms.EmailField()
     class Meta:
         model = User
-        fields = ['username', 'email']
+        fields = ['first_name', 'last_name', 'email']
 
 class User_DetailUpdateForm(forms.ModelForm):
-    mobile = forms.IntegerField()
+    # mobile = forms.IntegerField()
     city_address = forms.CharField()
     class Meta:
         model = User_Detail
-        fields = ['mobile', 'city_address']
+        fields = ['city_address']
 

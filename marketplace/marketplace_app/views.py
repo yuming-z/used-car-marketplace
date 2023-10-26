@@ -220,7 +220,7 @@ def account_detail(request):
             # if u_form.is_valid() and ud_form.is_valid():
             u_form.save()
             # print(ud_form.errors)
-            # ud_form.save()
+            ud_form.save()
             messages.success(request, f'Your account has been updated!')
             return redirect('account_detail')
 
@@ -236,7 +236,7 @@ def account_detail(request):
         }
 
         return render(request, APP_NAME + 'account_detail.html', context)
-
+@login_required
 def account_delete(request):
     if request.method == "POST":
         request.user.delete()
@@ -245,7 +245,7 @@ def account_delete(request):
         return redirect('index.html') 
 
     # If it's a GET request, render a confirmation page
-    return render(request, APP_NAME + 'account_delete_confirm.html')
+    return render(request, APP_NAME + 'index.html')
 
 
 # # Add by me
