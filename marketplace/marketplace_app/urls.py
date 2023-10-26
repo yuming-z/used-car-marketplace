@@ -20,6 +20,10 @@ urlpatterns = [
     path('activate_email_sent', views.activate_email_sent, name="activate_email_sent"),
     path('invalid_activation', views.invalid_activation_view, name="invalid_activation"),
 
+    # ratings
+    path('rating_seller', views.rate_seller_view, name="rating_seller"),
+    path('confirm_rating', views.confirm_rating_view, name="confirm_rating"),
+
     # car creations
     path('car', views.CarCreateView.as_view(), name="create-car"),
     path('model', views.CarModelCreateView.as_view(), name="create-model"),

@@ -167,6 +167,23 @@ def resetpassword_view(request, uidb64, token):
 
     return render(request, APP_NAME + 'reset_password.html', {'reset_form': form})
 
+def rate_seller_view(request):
+    if request.method == 'POST':
+        rating = int(request.POST.get('rating', 0))  # 0 if not found
+        comment = request.POST.get('comments', '')
+
+        # TODO: add rating to backend
+
+        print('Rating:', rating)
+        print('Comment:', comment)   
+
+        return redirect('confirm_rating')
+    else:
+        return render(request,  APP_NAME + 'rating_seller.html')
+
+def confirm_rating_view(request):
+    return render(request, APP_NAME + 'confirm_rating.html')
+
 class CarCreateView(CreateView):
     model = Car
     # TODO The URL redirected after the a new car is created successfully
