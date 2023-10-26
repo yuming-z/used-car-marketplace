@@ -1,0 +1,72 @@
+[
+    {
+        "model": "marketplace_app.Car_Brand",
+        "pk": 1,
+        "fields":{
+            "name": "Mazda"
+        }
+    },
+    {
+        "model": "marketplace_app.Car_Brand",
+        "pk": 2,
+        "fields":{
+            "name": "Toyota"
+        }
+    },
+    {
+        "model": "marketplace_app.Car_Brand",
+        "pk": 3,
+        "fields":{
+            "name": "Lexus"
+        }
+    },
+    {
+        "model": "marketplace_app.Car_Brand",
+        "pk": 4,
+        "fields":{
+            "name": "Suzuki"
+        }
+    },
+    {
+        "model": "marketplace_app.Car_Brand",
+        "pk": 5,
+        "fields":{
+            "name": "Ford"
+        }
+    },
+    {
+        "model": "marketplace_app.Car_Brand",
+        "pk": 6,
+        "fields":{
+            "name": "Tesla"
+        }
+    },
+    {
+        "model": "marketplace_app.Car_Brand",
+        "pk": 7,
+        "fields":{
+            "name": "Hyundai"
+        }
+    },
+    {
+        "model": "marketplace_app.Car_Brand",
+        "pk": 8,
+        "fields":{
+            "name": "Honda"
+        }
+    },
+    {
+        "model": "marketplace_app.Car_Brand",
+        "pk": 9,
+        "fields":{
+            "name": "Kia"
+        }
+    },
+    {
+        "model": "marketplace_app.Car_Brand",
+        "pk": 10,
+        "fields":{
+            "name": "Nissan"
+        }
+    }
+]
