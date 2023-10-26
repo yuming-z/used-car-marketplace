@@ -27,6 +27,7 @@ urlpatterns = [
     path('invalid_activation', views.invalid_activation_view, name="invalid_activation"),
 
     path('account_detail', views.account_detail, name='account_detail'),
+    
     # car creations
     path('car', views.CarCreateView.as_view(), name="create-car"),
     path('model', views.CarModelCreateView.as_view(), name="create-model"),
