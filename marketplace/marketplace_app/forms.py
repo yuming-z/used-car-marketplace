@@ -111,7 +111,6 @@ class CarForm(forms.ModelForm):
             'odometer',
             'price',
             'condition',
-            'owner',
             'prev_owner_count',
             'location',
             'description',

@@ -17,14 +17,14 @@
     <body>
         <!-- navigation bar -->
         <nav class="nav navbar navbar-expand-lg position-sticky top-0 custom-navbar">
-            <a href="index" class="logo">LOGO</a>
+            <a href="/index" class="logo">LOGO</a>
             <div class="navlink">
-              <a href="#">Buy</a>
+              <a href="/car_listings">Buy</a>
               {% if user.is_authenticated %}
-                <a href="#">Sell</a>
-                <a href="account_detail">Account</a>
+                <a href="/car">Sell</a>
+                <a href="/account_detail">Account</a>
               {% else %}
-                <a href="login">Login/Sign Up</a>
+                <a href="/login">Login/Sign Up</a>
               {% endif %}
             </div>
         </nav>
