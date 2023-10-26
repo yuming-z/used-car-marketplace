@@ -1,0 +1,43 @@
+{% extends 'marketplace_app/base.html' %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h2>Car Listings</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Car Brand</th>
+                    <th>Car Model</th>
+                    <th>Owner</th>
+                    <th>Price</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for listing in listings %}
+                <tr>
+                    <td>{{ listing.id }}</td>
+                    <td>{{ listing.car.car_brand }}</td>
+                    <td>{{ listing.car.car_model }}</td>
+                    <td>{{ listing.owner.username }}</td>
+                    <td>${{ listing.price }}</td>
+                    <td>{{ listing.description|truncatechars:50 }}</td>
+                    <td>
+                        <a href="{% url 'listing_detail' listing.id %}">View</a> | 
+                        {% if request.user == listing.owner %}
+                            <a href="{% url 'edit_listing' listing.id %}">Edit</a> | 
+                            <a href="{% url 'delete_listing' listing.id %}">Delete</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if not listings %}
+            <p>No listings available.</p>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -222,6 +222,10 @@ def listing_detail(request, listing_id):
     listing = get_object_or_404(Listing, id=listing_id)
     return render(request, 'listing_detail.html', {'listing': listing})
 
+def listings(request):
+    all_listings = Listing.objects.all()
+    return render(request, APP_NAME + 'listing.html', {'listings': all_listings})
+
 
 def delete_listing(request, listing_id):
     listing = get_object_or_404(Listing, id=listing_id)
