@@ -221,11 +221,10 @@ img.img-no-resize {
 .car-form {
     display:block;
     text-align: center;
-    margin-top: 50px;
+    margin-top: 70px;
     margin-left: auto;
     margin-right: auto;
     width:800px;
-    /* height:600px; */
     background-color: white;
     padding:0px 30px;
     padding-bottom: 100px;

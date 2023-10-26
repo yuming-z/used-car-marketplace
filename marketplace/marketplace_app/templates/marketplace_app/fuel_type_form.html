@@ -1,20 +1,25 @@
 {% extends 'marketplace_app/base.html' %}
 
 {% block content %}
-<h1 class="h1 pt-3 ms-4">Create a New Fuel Type</h1>
+<div class="car-form">
+    <h1 class="h1 pt-3 ms-4">Create a New Fuel Type</h1>
 
-<form method="post" class="pt-2 ms-4">
-    {% csrf_token %}
+    <br>
+    <p>Please register the fuel type of your vehicle.</p>
 
-    {{ form.as_div }}
+    <form method="post" class="pt-2 ms-4">
+        {% csrf_token %}
 
-    <button type="submit" class="btn btn-primary mt-3">Submit</button>
-</form>
+        {{ form.as_div }}
 
-{% if form.errors %}
-<div class="alert alert-danger my-5">
-    {{ form.errors.title.as_text}}
+        <button type="submit" class="btn btn-primary mt-3">Submit</button>
+    </form>
+
+    {% if form.errors %}
+    <div class="alert alert-danger my-5">
+        {{ form.errors.title.as_text}}
+    </div>
+    {% endif %}
 </div>
-{% endif %}
 
 {% endblock content %}

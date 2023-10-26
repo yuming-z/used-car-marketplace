@@ -47,6 +47,7 @@
             {{ form.model.label_tag }} <br>
             {{ form.model }} <br>
             <div class="button-space">
+                <p>Model not listed?</p>
                 <a href="{% url 'create-model' %}" class="btn btn-secondary">Create new model</a>
             </div>
         </div>
@@ -55,7 +56,8 @@
             {{ form.fuel_type.label_tag }} <br>
             {{ form.fuel_type }} <br>
             <div class="button-space">
-            <a href="{% url 'create-fuel' %}" class="btn btn-secondary">Create new fuel type</a>
+                <p>Fuel Type not listed?</p>
+                <a href="{% url 'create-fuel' %}" class="btn btn-secondary">Create new fuel type</a>
             </div>
         </div>
 
@@ -63,7 +65,8 @@
             {{ form.transmission.label_tag }} <br>
             {{ form.transmission }} <br>
             <div class="button-space">
-            <a href="{% url 'create-transmission' %}" class="btn btn-secondary">Create new tranmission type</a>
+                <p>Transmission Type not listed?</p>
+                <a href="{% url 'create-transmission' %}" class="btn btn-secondary">Create new tranmission type</a>
             </div>
         </div>
 
