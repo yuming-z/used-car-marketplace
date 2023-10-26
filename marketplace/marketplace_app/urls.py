@@ -8,7 +8,13 @@ urlpatterns = [
     # login/signup
     path('login', views.login_view, name="login"),
     path('signup', views.signup_view, name="signup"),
-
+    
+    # path('update_detail', views.update_user_detail, name='update_user_detail'),
+    # path('update_user_detail', views.update_user_detail, name='update_user_detail'),
+    #path('user_detail', views.update_user_detail, name='update_user_detail'),
+    path('logout', views.logout_view, name='logout'),
+    path('account_delete', views.account_delete, name='account_delete'),
+    
     # forgot/reset password
     path('forgotpassword', views.forgotpassword_view, name="forgotpassword"),
     path('reset_password/<uidb64>/<token>/', views.resetpassword_view, name="reset_password"),
@@ -20,6 +26,8 @@ urlpatterns = [
     path('activate_email_sent', views.activate_email_sent, name="activate_email_sent"),
     path('invalid_activation', views.invalid_activation_view, name="invalid_activation"),
 
+    path('account_detail', views.account_detail, name='account_detail'),
+    
     # car creations
     path('car', views.CarCreateView.as_view(), name="create-car"),
     path('model', views.CarModelCreateView.as_view(), name="create-model"),

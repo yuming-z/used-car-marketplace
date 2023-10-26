@@ -7,9 +7,16 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth import login, authenticate
 from django.core.mail import send_mail
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms.models import BaseModelForm
 from django.views.generic import CreateView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.forms import UserChangeForm
+from django.contrib import messages
+
+# from .forms import UserDetailForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
+from .forms import UserUpdateForm, User_DetailUpdateForm
 
 from .tokens import account_activation_token, reset_password_token
 from .models import *
@@ -21,6 +28,7 @@ APP_NAME = "marketplace_app/"
 def index(request):
     return render(request, APP_NAME + 'index.html')
 
+# log in
 def login_view(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
@@ -39,6 +47,12 @@ def login_view(request):
 
     return render(request,  APP_NAME + 'login.html', {'login_form': form})
 
+def logout_view(request):
+    logout(request)
+    return redirect('index')
+
+# activating sign up verification link from email
+# then logs user in
 def activate(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
@@ -72,6 +86,8 @@ def invalid_activation_view(request):
 def invalid_reset_view(request):
     return render(request,  APP_NAME + 'invalid_reset.html')
 
+# sign up process
+# includes confirming verification email
 def signup_view(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
@@ -79,7 +95,7 @@ def signup_view(request):
             
             user, msg = form.save(commit=False)    
             if user is not None:
-                print("Signup works")
+                # print("Signup works")
                 user.is_active = False 
                 user.save()
 
@@ -97,7 +113,7 @@ def signup_view(request):
                 send_mail(subject=subject, message=message, from_email='elec05471@gmail.com', recipient_list=[user.email])
                 return redirect('activate_email_sent')
             
-            else:
+            else: # if user signs up with number or email that already exists
                 if msg == "mobile":
                     form.add_error(None, "Signup failed. Phone Number already exists.")
                 elif msg == "email":
@@ -108,12 +124,14 @@ def signup_view(request):
 
     return render(request,  APP_NAME + 'signup.html', {'signup_form': form})
 
+# user submits email to forget password
 def forgotpassword_view(request):
     if request.method == 'POST':
         form = ForgetPasswordForm(request.POST)
         if form.is_valid():
             user = form.get_user()
 
+            # sends email to user to reset password
             if user is not None:
                 current_site = get_current_site(request)
                 subject = 'Reset Your Carsales Account Password'
@@ -135,16 +153,20 @@ def forgotpassword_view(request):
 
     return render(request, APP_NAME + 'forgotpassword.html', {'forget_form': form})
 
+# form for inputting new password
 def resetpassword_view(request, uidb64, token):
     if request.method == 'POST':
         form = ResetPasswordForm(request.POST)
         if form.is_valid():
+            # check if link is valid
             try:
                 uid = force_str(urlsafe_base64_decode(uidb64))
                 user = User.objects.get(pk=uid)
             except (TypeError, ValueError, OverflowError, User.DoesNotExist):
                 user = None    
 
+            # update password based on user input
+            # password cannot be the same as previous password
             if user is not None and reset_password_token.check_token(user, token):
                 outcome, msg = form.checks_if_old_password(user)
                 if outcome:
@@ -168,6 +190,7 @@ def resetpassword_view(request, uidb64, token):
 
     return render(request, APP_NAME + 'reset_password.html', {'reset_form': form})
 
+# single car listing view
 def car_listing_view(request, car_id):
     try:
         current_car = get_object_or_404(Car, id=car_id)
@@ -175,6 +198,7 @@ def car_listing_view(request, car_id):
     except Http404:
         return render(request, APP_NAME + 'error_page.html')
 
+# all car listings view
 def car_listings_view(request):
     all_car_listings = Car.objects.all()
     # if request.user.is_authenticated: # dont show logged in users listings
@@ -211,6 +235,83 @@ class FuelCreateView(LoginRequiredMixin, CreateView):
     model = Fuel_Type
     success_url = 'car'
     form_class = FuelForm
+
+# def account_update(request):
+#     user_change_form = UserChangeForm(isinstance = request.user)
+#     return render(request, APP_NAME + 'account_update.html', {'form': form})
+
+@login_required
+def account_detail(request):
+        if request.method == "POST":
+            u_form = UserUpdateForm(request.POST, instance=request.user)
+            ud_form = User_DetailUpdateForm(request.POST, instance=request.user.user_detail)
+            # p_form = ProfileUpdateForm(request.POST,
+                                        # request.FILES,
+                                        # instance=request.user.profile)
+            #  if u_form.is_valid() and p_form.is_valid():
+            # if u_form.is_valid() and ud_form.is_valid():
+            u_form.save()
+            # print(ud_form.errors)
+            # ud_form.save()
+            messages.success(request, f'Your account has been updated!')
+            return redirect('account_detail')
+
+        else:
+            u_form = UserUpdateForm(instance=request.user)
+            ud_form = User_DetailUpdateForm(instance=request.user.user_detail)
+            # p_form = ProfileUpdateForm(instance=request.user.profile)
+
+        context = {
+            'u_form': u_form,
+            'ud_form': ud_form
+            # 'p_form': p_form
+        }
+
+        return render(request, APP_NAME + 'account_detail.html', context)
+
+def account_delete(request):
+    if request.method == "POST":
+        request.user.delete()
+        logout(request)
+
+        return redirect('index.html') 
+
+    # If it's a GET request, render a confirmation page
+    return render(request, APP_NAME + 'account_delete_confirm.html')
+
+
+# # Add by me
+# def update_user_detail(request):
+#     try:
+#         user_detail = request.user.user_detail
+#     except User_Detail.DoesNotExist:
+#         user_detail = User_Detail(user=request.user)
+    
+#     user_change_form = UserChangeForm(instance = user_detail)
+
+#     # if request.method == "POST":
+#     #     form = UserDetailForm(request.POST, instance=user_detail)
+#     #     if form.is_valid():
+#     #         form.save()
+#     #         return redirect('base.html') # Replace with appropriate redirect
+#     # else:
+#     #     form = UserDetailForm(instance=user_detail)
+
+#     return render(request, APP_NAME + 'update_detail.html', {'user_change_form':user_change_form})
+    # return render(request,  APP_NAME + 'login.html', {'login_form': form})
+    
+
+    # @login_required
+    # def profile(request):
+    #     u_form = UserUpdateForm()
+    #     p_form = ProfileUpdateForm()
+
+    #     context = {
+    #         'u_form': u_form,
+    #         'p_form': p_form
+    #     }
+
+    #     return render(request, APP_NAME + 'user_detail.html', context)
     
 def create_listing(request):
     if request.method == 'POST':
