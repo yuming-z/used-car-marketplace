@@ -21,7 +21,11 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('marketplace_app.urls')),
-
+    path('account', include('marketplace_app.urls')),
+    path('update_detail', include('marketplace_app.urls')),
+    path('update_user_detail', include('marketplace_app.urls')),
+    path('account_delete', include('marketplace_app.urls')),
+    path('account_detail', include('marketplace_app.urls')),
     path('index', include('marketplace_app.urls')),
     path('login/', include('marketplace_app.urls')),
     path('signup', include('marketplace_app.urls')),

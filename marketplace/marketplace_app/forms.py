@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError  
+from .models import User_Detail
 
 from .models import Car, Car_Brand, Car_Model, Car_File, Fuel_Type, Transmission_Type, User_Detail
 
@@ -61,7 +62,7 @@ class SignupForm(UserCreationForm):
         try:
             user.email = self.email_exists()
             user.number = self.number_exists()
-            user.username = user.email  # Set username to email
+            user.username = self.first_name  # Set username to email
             if commit:
                 user.save()
             return user, ""
@@ -160,3 +161,18 @@ class FuelForm(forms.ModelForm):
         fields = (
             'name',
         )
+
+class UserUpdateForm(forms.ModelForm):
+    username = forms.CharField()
+    email = forms.EmailField()
+    class Meta:
+        model = User
+        fields = ['username', 'email']
+
+class User_DetailUpdateForm(forms.ModelForm):
+    mobile = forms.IntegerField()
+    city_address = forms.CharField()
+    class Meta:
+        model = User_Detail
+        fields = ['mobile', 'city_address']
+

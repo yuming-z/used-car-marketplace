@@ -9,6 +9,14 @@ from django.contrib.auth import login, authenticate
 from django.core.mail import send_mail
 from django.forms.models import BaseModelForm
 from django.views.generic import CreateView
+from django.contrib.auth.forms import UserChangeForm
+from .models import User_Detail
+from django.contrib import messages
+
+# from .forms import UserDetailForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
+from .forms import UserUpdateForm, User_DetailUpdateForm
 
 from .tokens import account_activation_token, reset_password_token
 from .models import *
@@ -37,6 +45,10 @@ def login_view(request):
         form = LoginForm()
 
     return render(request,  APP_NAME + 'login.html', {'login_form': form})
+
+def logout_view(request):
+    logout(request)
+    return redirect('index')
 
 def activate(request, uidb64, token):
     try:
@@ -191,3 +203,80 @@ class FuelCreateView(CreateView):
     model = Fuel_Type
     success_url = 'car'
     form_class = FuelForm
+
+# def account_update(request):
+#     user_change_form = UserChangeForm(isinstance = request.user)
+#     return render(request, APP_NAME + 'account_update.html', {'form': form})
+
+@login_required
+def account_detail(request):
+        if request.method == "POST":
+            u_form = UserUpdateForm(request.POST, instance=request.user)
+            ud_form = User_DetailUpdateForm(request.POST, instance=request.user.user_detail)
+            # p_form = ProfileUpdateForm(request.POST,
+                                        # request.FILES,
+                                        # instance=request.user.profile)
+            #  if u_form.is_valid() and p_form.is_valid():
+            # if u_form.is_valid() and ud_form.is_valid():
+            u_form.save()
+            # print(ud_form.errors)
+            # ud_form.save()
+            messages.success(request, f'Your account has been updated!')
+            return redirect('account_detail')
+
+        else:
+            u_form = UserUpdateForm(instance=request.user)
+            ud_form = User_DetailUpdateForm(instance=request.user.user_detail)
+            # p_form = ProfileUpdateForm(instance=request.user.profile)
+
+        context = {
+            'u_form': u_form,
+            'ud_form': ud_form
+            # 'p_form': p_form
+        }
+
+        return render(request, APP_NAME + 'account_detail.html', context)
+
+def account_delete(request):
+    if request.method == "POST":
+        request.user.delete()
+        logout(request)
+
+        return redirect('index.html') 
+
+    # If it's a GET request, render a confirmation page
+    return render(request, APP_NAME + 'account_delete_confirm.html')
+
+
+# # Add by me
+# def update_user_detail(request):
+#     try:
+#         user_detail = request.user.user_detail
+#     except User_Detail.DoesNotExist:
+#         user_detail = User_Detail(user=request.user)
+    
+#     user_change_form = UserChangeForm(instance = user_detail)
+
+#     # if request.method == "POST":
+#     #     form = UserDetailForm(request.POST, instance=user_detail)
+#     #     if form.is_valid():
+#     #         form.save()
+#     #         return redirect('base.html') # Replace with appropriate redirect
+#     # else:
+#     #     form = UserDetailForm(instance=user_detail)
+
+#     return render(request, APP_NAME + 'update_detail.html', {'user_change_form':user_change_form})
+    # return render(request,  APP_NAME + 'login.html', {'login_form': form})
+    
+
+    # @login_required
+    # def profile(request):
+    #     u_form = UserUpdateForm()
+    #     p_form = ProfileUpdateForm()
+
+    #     context = {
+    #         'u_form': u_form,
+    #         'p_form': p_form
+    #     }
+
+    #     return render(request, APP_NAME + 'user_detail.html', context)

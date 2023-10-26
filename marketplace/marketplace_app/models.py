@@ -23,6 +23,8 @@ class User_Detail(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user_detail", primary_key=True)
     mobile = models.IntegerField(blank=True, null=True)
     email_confirmed = models.BooleanField(default=False)
+    city_address = models.CharField(max_length=255,blank=True, null=True)
+
 
     def clean(self) -> None:
         '''
@@ -33,7 +35,7 @@ class User_Detail(models.Model):
 
             mobile_string = str(self.mobile)
 
-            if len(mobile_string) != 10:
+            if len(mobile_string) != 9:
                 raise ValidationError(_("The mobile number should have 10 numbers."))
             
             if not mobile_string.startswith("04"):
@@ -252,3 +254,6 @@ class Buyer_Rating(Rating):
         '''
         if self.seller == self.buyer:
             raise ValidationError(_("The buyer and seller cannot be the same person."))
+        
+# class Profile(models.Model):
+#     user = models.OneToOneField(User, on_delete=models.CASCADE)        

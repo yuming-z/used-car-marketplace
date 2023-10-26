@@ -1,0 +1,11 @@
+{% extends "marketplace_app/base_account.html" %}
+
+{% block content %}
+    <h2>Confirm Account Deletion</h2>
+    <p>Are you sure you want to delete your account?</p>
+    <form method="post">
+        {% csrf_token %}
+        <input type="submit" value="Yes, Delete My Account">
+        <a href="{% url 'update_detail' %}">No, Take Me Back</a>
+    </form>
+{% endblock %}
