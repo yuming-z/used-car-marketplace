@@ -1,0 +1,23 @@
+[
+    {
+        "model": "marketplace_app.Transmission_Type",
+        "pk": 1,
+        "fields": {
+            "name": "Automatic"
+        }
+    },
+    {
+        "model": "marketplace_app.Transmission_Type",
+        "pk": 2,
+        "fields": {
+            "name": "Manual"
+        }
+    },
+    {
+        "model": "marketplace_app.Transmission_Type",
+        "pk": 3,
+        "fields": {
+            "name": "Semi-automatic"
+        }
+    }
+]

@@ -41,40 +41,70 @@ class User_Detail(models.Model):
             if not mobile_string.startswith("04"):
                 # ref: https://www.australia.gov.au/telephone-country-and-area-codes
                 raise ValidationError(_("The mobile number is invalid."))
+            
+# define a natural key for car brand 
+# to be better referenced as a foreign key
+class FuelTypeManager(models.Manager):
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
 
 class Fuel_Type(models.Model):
     '''
     The model to store fuel types.
     '''
     name = models.CharField(max_length=11)
+    
+    objects = FuelTypeManager()
 
     def __str__(self):
         return self.name
+    
+# define a natural key for car brand 
+# to be better referenced as a foreign key
+class CarBrandManager(models.Manager):
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
     
 class Car_Brand(models.Model):
     '''
     The model to store car brand information.
     '''
     name = models.CharField(max_length=30)
+    
+    objects = CarBrandManager()
 
     def __str__(self) -> str:
         return self.name
 
+# define a natural key method for car model 
+# to be better referenced as a foreign key
+class CarModelManager(models.Manager):
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
+    
 class Car_Model(models.Model):
     '''
     The model to store car model information.
     '''
     brand = models.ForeignKey(Car_Brand, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
+    
+    objects = CarModelManager()
 
     def __str__(self) -> str:
         return self.name
 
+class TransmissionManager(models.Manager):
+        def get_by_natural_key(self, name):
+            return self.get(name=name)
+    
 class Transmission_Type(models.Model):
     '''
     The model to store transmission types.
     '''
     name = models.CharField(max_length=20)
+    
+    objects = TransmissionManager()
 
     def __str__(self) -> str:
         return self.name
@@ -106,10 +136,14 @@ class Car(models.Model):
     price = models.FloatField()
     condition = models.CharField(max_length=9, choices=CAR_CONDITION)
     fuel_type = models.ForeignKey(Fuel_Type, on_delete=models.CASCADE, related_name="cars")
-    transmission = models.ManyToManyField(Transmission_Type, related_name="cars")
+    transmission = models.ForeignKey(Transmission_Type, on_delete=models.CASCADE, related_name="cars")
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="cars")
     prev_owner_count = models.IntegerField(default=1)
     location = models.CharField(max_length=100)
+    
+    def __str__(self) -> str:
+        return "[Car ID: {}] {} {} {}, {}".format(self.id,  self.year, self.model, self.transmission, self.registration_number)
+
 
 class Car_File(models.Model):
     '''
@@ -256,4 +290,11 @@ class Buyer_Rating(Rating):
             raise ValidationError(_("The buyer and seller cannot be the same person."))
         
 # class Profile(models.Model):
-#     user = models.OneToOneField(User, on_delete=models.CASCADE)        
+#     user = models.OneToOneField(User, on_delete=models.CASCADE)  
+      
+class Listing(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=100, choices=[("ACTIVE", "Active"), ("INACTIVE", "Inactive")])
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
