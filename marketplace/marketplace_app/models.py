@@ -252,3 +252,10 @@ class Buyer_Rating(Rating):
         '''
         if self.seller == self.buyer:
             raise ValidationError(_("The buyer and seller cannot be the same person."))
+        
+class Listing(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=100, choices=[("ACTIVE", "Active"), ("INACTIVE", "Inactive")])
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
