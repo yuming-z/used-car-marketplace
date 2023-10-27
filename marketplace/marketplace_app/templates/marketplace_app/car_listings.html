@@ -1,34 +1,36 @@
 {% extends 'marketplace_app/base.html' %}
 
 {% block content %}
-<div class="mt-2">
-    <h1 class="marketing-header">Available Cars</h1>
-</div>
+<div class="top-whitespace">
+    <div class="mt-2">
+        <h1 class="marketing-header">Available Cars</h1>
+    </div>
 
-<div class="container car-listing-container mt-3">
-    <div class="row">
-        {% if all_car_listings %}
-        <div class="col-md-4">
-            {% for car in all_car_listings %}
-                    <div class="car-listing">
-                        <div class="listing-photo">
-                            <img src="https://imageio.forbes.com/specials-images/imageserve/5d35eacaf1176b0008974b54/2020-Chevrolet-Corvette-Stingray/0x0.jpg?format=jpg&crop=4560,2565,x790,y784,safe&width=960" alt="{{ car.model }}" width="100%">
+    <div class="container car-listing-container mt-3">
+        <div class="row">
+            {% if all_car_listings %}
+            <div class="col-md-4">
+                {% for car in all_car_listings %}
+                        <div class="car-listing">
+                            <div class="listing-photo">
+                                <img src="https://imageio.forbes.com/specials-images/imageserve/5d35eacaf1176b0008974b54/2020-Chevrolet-Corvette-Stingray/0x0.jpg?format=jpg&crop=4560,2565,x790,y784,safe&width=960" alt="{{ car.model }}" width="100%">
+                            </div>
+                            <div class="listing-details">
+                                <h2>{{ car.model.brand }} {{ car.model }}</h2>
+                                <p><strong>Price:</strong> ${{ car.price|floatformat:2 }}</p>
+                                <p><strong>Condition:</strong> {{ car.get_condition_display }}</p>
+                                <p><strong>Seller:</strong> {{ car.owner.first_name }} {{ car.owner.last_name }}</p>
+                                <a class="btn btn-custom my-2 my-sm-0" href="/car_listing/{{ car.id }}">View Details</a>
+                            </div>
                         </div>
-                        <div class="listing-details">
-                            <h2>{{ car.model.brand }} {{ car.model }}</h2>
-                            <p><strong>Price:</strong> ${{ car.price|floatformat:2 }}</p>
-                            <p><strong>Condition:</strong> {{ car.get_condition_display }}</p>
-                            <p><strong>Seller:</strong> {{ car.owner.first_name }} {{ car.owner.last_name }}</p>
-                            <a class="btn btn-custom my-2 my-sm-0" href="/car_listing/{{ car.id }}">View Details</a>
-                        </div>
-                    </div>
-                
-            {% endfor %}
+                    
+                {% endfor %}
+            </div>
+            {% else %}
+                <h2>No current car listings.</h2>
+            {% endif %}
+            
         </div>
-        {% else %}
-            <h2>No current car listings.</h2>
-        {% endif %}
-        
     </div>
 </div>
 

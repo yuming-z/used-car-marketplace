@@ -1,29 +1,32 @@
 {% extends 'marketplace_app/base.html' %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <div class="car-details">
-                <h2 class="car-title">{{ car.model.brand }} {{ car.model.name }}</h2>
-                
-                <div class="mt-2">
-                    <p class="price">${{ car.price|floatformat:2 }}</p>
-                    <p class="status">Status: {{ car.get_status_display }}</p>
-                    <p>{{ car.description }}</p>
-                </div>
 
-                <div class="car-info mt-5">
-                    <p><strong>Year:</strong> {{ car.year }}</p>
-                    <p><strong>Registration Number:</strong> {{ car.registration_number }}</p>
-                    <p><strong>Condition:</strong> {{ car.get_condition_display }}</p>
-                    <p><strong>Fuel Type:</strong> {{ car.fuel_type.name }}</p>
-                    <p><strong>Transmission:</strong> {{ car.transmission.name }}</p>
-                    <p><strong>Odometer:</strong> {{ car.odometer }} kilometres</p>
-                    <p><strong>Location:</strong> {{ car.location }}</p>
+<div class="top-whitespace">
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="car-details">
+                    <h2 class="car-title">{{ car.model.brand }} {{ car.model.name }}</h2>
                     
-                    <p><strong>Previous Owner Count:</strong> {{ car.prev_owner_count }}</p>
-                    <p><strong>Seller:</strong> {{ car.owner.first_name }} {{ car.owner.last_name }}</p>
+                    <div class="mt-2">
+                        <p class="price">${{ car.price|floatformat:2 }}</p>
+                        <p class="status">Status: {{ car.get_status_display }}</p>
+                        <p>{{ car.description }}</p>
+                    </div>
+
+                    <div class="car-info mt-5">
+                        <p><strong>Year:</strong> {{ car.year }}</p>
+                        <p><strong>Registration Number:</strong> {{ car.registration_number }}</p>
+                        <p><strong>Condition:</strong> {{ car.get_condition_display }}</p>
+                        <p><strong>Fuel Type:</strong> {{ car.fuel_type.name }}</p>
+                        <p><strong>Transmission:</strong> {{ car.transmission.name }}</p>
+                        <p><strong>Odometer:</strong> {{ car.odometer }} kilometres</p>
+                        <p><strong>Location:</strong> {{ car.location }}</p>
+                        
+                        <p><strong>Previous Owner Count:</strong> {{ car.prev_owner_count }}</p>
+                        <p><strong>Seller:</strong> {{ car.owner.first_name }} {{ car.owner.last_name }}</p>
+                    </div>
                 </div>
             </div>
         </div>
