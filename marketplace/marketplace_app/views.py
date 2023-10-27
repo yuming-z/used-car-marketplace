@@ -47,6 +47,10 @@ def confirm_rating_view(request):
 def error_page_view(request):
     return render(request, APP_NAME + 'error_page.html')
 
+def logout_view(request):
+    logout(request)
+    return redirect('/')
+
 # login page
 def login_view(request):
     if request.method == 'POST':

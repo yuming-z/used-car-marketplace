@@ -271,6 +271,10 @@ img.img-no-resize {
     padding:50px;
 }
 
+.top-whitespace {
+    margin-top: 100px;
+}
+
 /* listings */
 .car-listing-container {
     display: flex;
