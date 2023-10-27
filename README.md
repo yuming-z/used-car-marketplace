@@ -114,3 +114,15 @@ Then run the following command to apply database migrations:
 python manage.py makemigrations marketplace_app
 python manage.py migrate
 ```
+
+## Load initial dummy data
+
+To load the initial dummy data, run the following command at the command line interface:
+
+```bash
+python manage.py loaddata car_brand
+python manage.py loaddata car_model
+python manage.py loaddata fuel_type
+python manage.py loaddata transmission
+python manage.py loaddata car
+```
