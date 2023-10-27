@@ -31,16 +31,16 @@ class User_Detail(models.Model):
         The function to check if the mobile number is valid.
         Assume Australian mobile number without country code.
         '''
-        if (self.mobile is not None) and (self.mobile != ""):
+        # if (self.mobile is not None) and (self.mobile != ""):
 
-            mobile_string = str(self.mobile)
+        #     mobile_string = str(self.mobile)
 
-            if len(mobile_string) != 9:
-                raise ValidationError(_("The mobile number should have 10 numbers."))
+        #     if len(mobile_string) != 9:
+        #         raise ValidationError(_("The mobile number should have 10 numbers."))
             
-            if not mobile_string.startswith("04"):
-                # ref: https://www.australia.gov.au/telephone-country-and-area-codes
-                raise ValidationError(_("The mobile number is invalid."))
+        #     if not mobile_string.startswith("04"):
+        #         # ref: https://www.australia.gov.au/telephone-country-and-area-codes
+        #         raise ValidationError(_("The mobile number is invalid."))
 
 class Fuel_Type(models.Model):
     '''

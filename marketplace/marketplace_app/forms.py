@@ -170,9 +170,9 @@ class UserUpdateForm(forms.ModelForm):
         fields = ['username', 'email']
 
 class User_DetailUpdateForm(forms.ModelForm):
-    mobile = forms.IntegerField()
+    # mobile = forms.IntegerField()
     city_address = forms.CharField()
     class Meta:
         model = User_Detail
-        fields = ['mobile', 'city_address']
+        fields = ['city_address']
 

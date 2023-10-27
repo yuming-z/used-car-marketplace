@@ -17,21 +17,26 @@
 
 <style type="text/css">
     .sidenav {
-        height: 100%;
-        width: 200px;
-        position: fixed;
-        z-index: 10;
-        top: 65px;
-        left: 0;
-        background-color: #02343F;
-        overflow-x: hidden;
-        padding-top: 20px;
+      height: 100%;
+      width: 200px;
+      position: fixed;
+      z-index: 10;
+      top: 65px;
+      left: 0;
+      background-color: #02343F;
+      overflow-x: hidden;
+      padding-top: 20px;
+      font-family: Arial, sans-serif;
     }
 
     .sidenav a {
-        padding: 6px 8px 6px 16px;
-        text-decoration: none;
-        display: block
+    padding: 10px 16px;
+    text-decoration: none;
+    display: block;
+    font-weight: 600; /* Bold font */
+    color: #ddd; /* Lighter color for better visibility */
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+    border-radius: 8px; /* Rounded corners */
     }
 
     .sidenav li {
@@ -54,8 +59,13 @@
     }
 
     .sidenav a:hover {
-        color: white;
+      background-color: #0D5D6B; /* Darker shade of the sidenav background color */
+      color: #ffffff; /* Pure white color on hover */
     }
+
+    .sidenav a .fa { /* FontAwesome Icon Styling */
+    margin-right: 10px; /* Space between icon and text */
+}
 </style>
 
 <body>
@@ -66,7 +76,7 @@
             <a href="#">Buy</a>
             <a href="#">Sell</a>
             {% if user.is_authenticated %}
-            <a href="account">Account</a>
+            <a href="account_detail">Account</a>
             {% else %}
             <a href="login">Login/Sign Up</a>
             {% endif %}
@@ -105,11 +115,11 @@
 
     <div class="sidenav">
         <ul>
-            <li><a href="account_detail">Account Details</a></li>
-            <li><a href="#">My Car Preferences</a></li>
-            <li><a href="#">My Listings</a></li>
-            <li><a href="#">My Wishlist</a></li>
-            <li><a href="logout">Logout</a></li>
+          <li><a href="account_detail"><i class="fa fa-user"></i>Account Details</a></li>
+          <li><a href="#"><i class="fa fa-car"></i>My Car Preferences</a></li>
+          <li><a href="#"><i class="fa fa-list"></i>My Listings</a></li>
+          <li><a href="#"><i class="fa fa-heart"></i>My Wishlist</a></li>
+          <li><a href="logout"><i class="fa fa-sign-out-alt"></i>Logout</a></li>
         </ul>
     </div>
 

@@ -236,7 +236,7 @@ def account_detail(request):
         }
 
         return render(request, APP_NAME + 'account_detail.html', context)
-
+@login_required
 def account_delete(request):
     if request.method == "POST":
         request.user.delete()
