@@ -78,10 +78,10 @@ class SignupForm(UserCreationForm):
         user = super(SignupForm, self).save(commit=False)
         try:
             user.email = self.email_exists()
+            user.username = user.email
             user.number = self.number_exists()
-            user.username = self.first_name  # Set username to email
-            user.first_name = self.first_name
-            user.last_nameb = self.last_name
+            user.first_name = self.cleaned_data['first_name'] 
+            user.last_name = self.cleaned_data['last_name'] 
             if commit:
                 user.save()
             return user, ""
