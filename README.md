@@ -10,6 +10,8 @@
 - [Django](https://pypi.org/project/Django/) 4.2.5
 - [django-environ](https://pypi.org/project/django-environ/) 0.11.2
 - [psycopg](https://pypi.org/project/psycopg/) 3.1.12
+- [six](https://pypi.org/project/six/) 1.16.0
+- [crispy-bootstrap4](https://pypi.org/project/crispy-bootstrap4/) 2023.1
 
 ## How to run the application
 
