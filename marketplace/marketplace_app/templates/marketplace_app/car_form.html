@@ -1,88 +1,99 @@
 {% extends 'marketplace_app/base.html' %}
 
 {% block content %}
-<h1 class="h1 pt-3 ms-4">Car Registration</h1>
+<div class="car-form">
+    <h1 class="h1 pt-3 ms-4 form-title">Car Registration</h1>
 
-<form method="post" class="pt-2 ms-4">
-    {% csrf_token %}
-    <!-- {{ form.as_div }} -->
+    <form method="post" class="pt-2 ms-4">
+        {% csrf_token %}
+        <!-- {{ form.as_div }} -->
 
-    <div class="mt-3">
-        {{ form.registration_number.label_tag }} <br>
-        {{ form.registration_number }}
-    </div>
+        <div class="mt-3 form-group">
+            {{ form.registration_number.label_tag }} <br>
+            {{ form.registration_number }}
+        </div>
 
-    <div class="mt-3">
-        {{ form.prev_owner_count.label_tag }} <br>
-        {{ form.prev_owner_count }}
-    </div>
+        <div class="mt-3 form-group">
+            {{ form.prev_owner_count.label_tag }} <br>
+            {{ form.prev_owner_count }}
+        </div>
 
-    <div class="mt-3">
-        {{ form.odometer.label_tag }} <br>
-        {{ form.odometer }}
-    </div>
+        <div class="mt-3 form-group">
+            {{ form.odometer.label_tag }} <br>
+            {{ form.odometer }}
+        </div>
 
-    <div class="mt-3">
-        {{ form.year.label_tag }} <br>
-        {{ form.year }}
-    </div>
+        <div class="mt-3 form-group">
+            {{ form.year.label_tag }} <br>
+            {{ form.year }}
+        </div>
 
-    <div class="mt-3">
-        {{ form.status.label_tag }} <br>
-        {{ form.status }}
-    </div>
+        <div class="mt-3 form-group">
+            {{ form.status.label_tag }} <br>
+            {{ form.status }}
+        </div>
 
-    <div class="mt-3">
-        {{ form.condition.label_tag }} <br>
-        {{ form.condition }}
-    </div>
+        <div class="mt-3 form-group">
+            {{ form.condition.label_tag }} <br>
+            {{ form.condition }}
+        </div>
 
-    <div class="mt-3">
-        {{ form.price.label_tag }} <br>
-        {{ form.price }}
-    </div>
+        <div class="mt-3 form-group">
+            {{ form.price.label_tag }} <br>
+            {{ form.price }}
+        </div>
 
-    <div class="mt-3">
-        {{ form.model.label_tag }} <br>
-        {{ form.model }} <br>
-        <a href="{% url 'create-model' %}" class="btn btn-secondary">Create new model</a>
-    </div>
+        <div class="mt-3 form-group">
+            {{ form.model.label_tag }} <br>
+            {{ form.model }} <br>
+            <div class="button-space">
+                <p>Model not listed?</p>
+                <a href="{% url 'create-model' %}" class="btn btn-secondary">Create new model</a>
+            </div>
+        </div>
 
-    <div class="mt-3">
-        {{ form.fuel_type.label_tag }} <br>
-        {{ form.fuel_type }} <br>
-        <a href="{% url 'create-fuel' %}" class="btn btn-secondary">Create new fuel type</a>
-    </div>
+        <div class="mt-3 form-group">
+            {{ form.fuel_type.label_tag }} <br>
+            {{ form.fuel_type }} <br>
+            <div class="button-space">
+                <p>Fuel Type not listed?</p>
+                <a href="{% url 'create-fuel' %}" class="btn btn-secondary">Create new fuel type</a>
+            </div>
+        </div>
 
-    <div class="mt-3">
-        {{ form.transmission.label_tag }} <br>
-        {{ form.transmission }} <br>
-        <a href="{% url 'create-transmission' %}" class="btn btn-secondary">Create new tranmission type</a>
-    </div>
+        <div class="mt-3 form-group">
+            {{ form.transmission.label_tag }} <br>
+            {{ form.transmission }} <br>
+            <div class="button-space">
+                <p>Transmission Type not listed?</p>
+                <a href="{% url 'create-transmission' %}" class="btn btn-secondary">Create new tranmission type</a>
+            </div>
+        </div>
 
-    <div class="mt-3">
-        {{ form.location.label_tag }} <br>
-        {{ form.location }}
-    </div>
+        <div class="mt-3 form-group">
+            {{ form.location.label_tag }} <br>
+            {{ form.location }}
+        </div>
 
-    <div class="mt-3">
-        {{ form.description.label_tag }} <br>
-        {{ form.description }}
-    </div>
+        <div class="mt-3 form-group">
+            {{ form.description.label_tag }} <br>
+            {{ form.description }}
+        </div>
+        
+        <button type="submit" class="btn btn-primary mt-3">Submit</button>
 
-    <button type="submit" class="btn btn-primary mt-3">Submit</button>
-
-    {% if form.errors %}
-    <div class="alert alert-danger my-5">
-        <ul>
-            {% for field in form %}
-                {% if field.errors %}
-                    <li>{{ field.label_tag }}: {{ field.errors }}</li>
-                {% endif %}
-            {% endfor %}
-        </ul>
-    </div>
-    {% endif %}
-</form>
+        {% if form.errors %}
+        <div class="alert alert-danger my-5">
+            <ul>
+                {% for field in form %}
+                    {% if field.errors %}
+                        <li>{{ field.label_tag }}: {{ field.errors }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </form>
+</div>
 
 {% endblock content %}

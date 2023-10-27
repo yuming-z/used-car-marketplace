@@ -8,7 +8,7 @@
                 <h2 class="car-title">{{ car.model.brand }} {{ car.model.name }}</h2>
                 
                 <div class="mt-2">
-                    <p class="price">${{ car.price }}</p>
+                    <p class="price">${{ car.price|floatformat:2 }}</p>
                     <p class="status">Status: {{ car.get_status_display }}</p>
                     <p>{{ car.description }}</p>
                 </div>
