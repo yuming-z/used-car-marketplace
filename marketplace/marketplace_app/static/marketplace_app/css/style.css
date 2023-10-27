@@ -393,3 +393,40 @@ img.img-no-resize {
     margin-bottom: 0;
     list-style: none;
 }
+
+/* Ratings */
+.rating-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.star {
+    font-size: 45px;
+    cursor: pointer;
+    margin: 0 10px;
+}
+
+.selected-star {
+    color: #FFD700;
+}
+
+textarea {
+    text-align: left;
+}
+
+.seller-details {
+    display: flex; /* Use flexbox to create a horizontal layout */
+    justify-content: space-between;
+    align-items: center; /* Vertically center align the seller details and car image */
+}
+
+.fit-in-box {
+    max-width: 150px;
+    height: auto;
+    margin-left: 10px;
+}
+
+.rating-description {
+    text-align: center;
+}

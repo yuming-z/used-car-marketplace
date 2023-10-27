@@ -1,15 +1,17 @@
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.http import HttpResponse, Http404
 from django.utils.html import escape
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, get_user_model
 from django.core.mail import send_mail
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms.models import BaseModelForm
 from django.views.generic import CreateView
+from django.db.models import Avg
+from django.conf import settings
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib import messages
 
@@ -24,55 +26,8 @@ from .forms import *
 
 APP_NAME = "marketplace_app/"
 
-# Create your views here.
 def index(request):
     return render(request, APP_NAME + 'index.html')
-
-# log in
-def login_view(request):
-    if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            user_email = form.cleaned_data['email']
-            user_password = form.cleaned_data['password']
-
-            user = authenticate(request, username=user_email, password=user_password)
-            if user is not None:
-                login(request, user)
-                return redirect('index')
-        
-        form.add_error(None, "Login failed. Please check your email and password.")
-    else:
-        form = LoginForm()
-
-    return render(request,  APP_NAME + 'login.html', {'login_form': form})
-
-def logout_view(request):
-    logout(request)
-    return redirect('index')
-
-# activating sign up verification link from email
-# then logs user in
-def activate(request, uidb64, token):
-    try:
-        uid = force_str(urlsafe_base64_decode(uidb64))
-        user = User.objects.get(pk=uid)
-    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-        user = None             
-
-    if user is not None and account_activation_token.check_token(user, token):
-        user_detail = User_Detail.objects.get(user=user)
-        user_detail.email_confirmed = True
-        user_detail.save()
-        
-        user.is_active = True
-        user.save()
-
-        login(request, user) # Log the user in
-        print("User is logged in "+user.username)
-        return redirect('index', permanent=True)
-    else:
-        return redirect('invalid_activation')
 
 def activate_email_sent(request):
     return render(request,  APP_NAME + 'activate_email_sent.html')
@@ -86,16 +41,67 @@ def invalid_activation_view(request):
 def invalid_reset_view(request):
     return render(request,  APP_NAME + 'invalid_reset.html')
 
-# sign up process
-# includes confirming verification email
+def confirm_rating_view(request):
+    return render(request, APP_NAME + 'confirm_rating.html')
+
+def error_page_view(request):
+    return render(request, APP_NAME + 'error_page.html')
+
+# login page
+def login_view(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        
+        # form valid.
+        if form.is_valid():
+            user_email = form.cleaned_data['email']
+            user_password = form.cleaned_data['password']
+
+            user = authenticate(request, username=user_email, password=user_password)
+            if user is not None:
+                login(request, user)
+                return redirect('index')
+        
+        # form invalid. user not found or invalid password.
+        form.add_error(None, "Login failed. Please check your email and password.")
+    else:
+        form = LoginForm()
+
+    return render(request,  APP_NAME + 'login.html', {'login_form': form})
+
+# activating signup form from email sent to user
+def activate(request, uidb64, token):
+    # check if token is valid
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None             
+
+    # complete signup registration and log user in
+    if user is not None and account_activation_token.check_token(user, token):
+        user_detail = User_Detail.objects.get(user=user)
+        user_detail.email_confirmed = True
+        user_detail.save()
+        
+        user.is_active = True
+        user.save()
+
+        login(request, user)
+        print("User is logged in "+user.username)
+        return redirect('index', permanent=True)
+    else:
+        return redirect('invalid_activation')
+
+# signup page
 def signup_view(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
+
+        # valid form.
         if form.is_valid():
-            
             user, msg = form.save(commit=False)    
             if user is not None:
-                # print("Signup works")
                 user.is_active = False 
                 user.save()
 
@@ -110,7 +116,7 @@ def signup_view(request):
                     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                     'token': account_activation_token.make_token(user),
                 })
-                send_mail(subject=subject, message=message, from_email='elec05471@gmail.com', recipient_list=[user.email])
+                send_mail(subject=subject, message=message, from_email=settings.EMAIL_HOST_USER, recipient_list=[user.email])
                 return redirect('activate_email_sent')
             
             else: # if user signs up with number or email that already exists
@@ -141,7 +147,7 @@ def forgotpassword_view(request):
                     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                     'token': reset_password_token.make_token(user),
                 })
-                send_mail(subject=subject, message=message, from_email='elec05471@gmail.com', recipient_list=[user.email])
+                send_mail(subject=subject, message=message, from_email=settings.EMAIL_HOST_USER, recipient_list=[user.email])
 
             else:
                 print("Email does not exist")
@@ -189,6 +195,81 @@ def resetpassword_view(request, uidb64, token):
         form = ResetPasswordForm()
 
     return render(request, APP_NAME + 'reset_password.html', {'reset_form': form})
+
+# TODO: need to add car listing id, and check if user correctly bought this car
+def rate_seller_view(request, seller_id):
+    User = get_user_model()
+
+    if request.method == 'POST':
+        # user input
+        rating = int(request.POST.get('rating', 0)) 
+        comment = request.POST.get('comments', '')
+
+        if rating != 0 or comment != '': # user has inputted something
+            try:
+                seller = get_object_or_404(User, id=seller_id)
+                user = request.user
+
+                print('Seller:', seller)
+                print('User:', user)
+                Seller_Rating.objects.create(seller=seller, buyer=user, rating=rating, comment=comment)
+
+            except Http404: # seller is not found
+                return redirect('error_page')
+            except ValidationError: # buyer and seller are the same person
+                return redirect('error_page')
+        return redirect('confirm_rating')
+    else:
+        try:
+            seller = get_object_or_404(User, id=seller_id)
+            user = request.user
+            if (seller == user):
+                return redirect('error_page')
+
+            seller_ratings = Seller_Rating.objects.filter(seller=seller)
+            average_rating = seller_ratings.aggregate(Avg('rating'))['rating__avg']
+
+            return render(request,  APP_NAME + 'rating_seller.html', {'seller': seller, 'average_rating': average_rating})
+        except Http404:
+            # seller is not found
+            return redirect('error_page')
+        
+def rate_buyer_view(request, buyer_id):
+    User = get_user_model()
+
+    if request.method == 'POST':
+        # user input
+        rating = int(request.POST.get('rating', 0)) 
+        comment = request.POST.get('comments', '')
+
+        if rating != 0 or comment != '': # user has inputted something
+            try:
+                buyer = get_object_or_404(User, id=buyer_id)
+                user = request.user
+
+                print('Buyer:', buyer)
+                print('User:', user)
+                Buyer_Rating.objects.create(seller=user, buyer=buyer, rating=rating, comment=comment)
+
+            except Http404: # seller is not found
+                return redirect('error_page')
+            except ValidationError: # buyer and seller are the same person
+                return redirect('error_page')
+        return redirect('confirm_rating')
+    else:
+        try:
+            buyer = get_object_or_404(User, id=buyer_id)
+            user = request.user
+            if (buyer == user):
+                return redirect('error_page')
+
+            buyer_ratings = Seller_Rating.objects.filter(buyer=buyer)
+            average_rating = buyer_ratings.aggregate(Avg('rating'))['rating__avg']
+
+            return render(request,  APP_NAME + 'rating_buyer.html', {'buyer': buyer, 'average_rating': average_rating})
+        except Http404:
+            # buyer is not found
+            return redirect('error_page')
 
 # single car listing view
 def car_listing_view(request, car_id):
