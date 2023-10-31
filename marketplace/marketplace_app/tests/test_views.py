@@ -5,7 +5,7 @@ from marketplace_app.models import *
 
 APP_NAME = "marketplace_app/"
 
-class SignUpViewTest(TestCase):
+class ViewsTest(TestCase):
     def test_signup_view_get(self):
         response = self.client.get(reverse('signup'))
         self.assertEqual(response.status_code, 200)
