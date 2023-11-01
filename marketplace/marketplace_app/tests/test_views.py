@@ -2,11 +2,8 @@ from django.test import TestCase
 from django.urls import reverse
 from django.core import mail
 
-
-from django.http import Http404
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode
-
 
 from marketplace_app.models import *
 from marketplace_app.tokens import *
@@ -565,7 +562,7 @@ class ViewsTest(TestCase):
         self.assertEqual(buyer_rating.rating, 5)
         self.assertEqual(buyer_rating.comment, 'Test comment')
 
-    # def test_rate_seller_view_post_invalid_same(self):
+    # def test_rate_buyer_view_post_invalid_same(self):
     #     seller_user = User.objects.create_user(
     #         username='seller@example.com', 
     #         password='your_password', 
@@ -621,3 +618,60 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('error_page'))
 
+    # -- UPDATE ACCOUNT --
+    def test_account_detail_view_get_valid(self):
+        old_user = User.objects.create_user(
+            username='user@example.com', 
+            password='your_password', 
+            first_name='User',
+            last_name='Name',
+            email='user@example.com'
+        )
+        old_user_number = User_Detail.objects.create(user=old_user, mobile='0411567980')
+        self.client.login(username='user@example.com', password='your_password')
+
+        response = self.client.get(reverse('account_detail'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, APP_NAME + 'account_detail.html')
+
+    def test_account_detail_view_post_valid(self):
+        old_user = User.objects.create_user(
+            username='user@example.com', 
+            password='your_password', 
+            first_name='User',
+            last_name='Name',
+            email='user@example.com'
+        )
+        old_user_number = User_Detail.objects.create(user=old_user, mobile='0411567980')
+        self.client.login(username='user@example.com', password='your_password')
+
+        response = self.client.post(reverse('account_detail'), {
+            'first_name': 'Updated',
+            'last_name': 'Name',
+            'email': 'user@example.com',
+            'city_address': 'Sydney',
+        })
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('account_detail'))
+
+        old_user_update = User.objects.get(username='user@example.com')
+        self.assertEqual(old_user_update.first_name, 'Updated')
+        self.assertEqual(old_user_update.last_name, 'Name')
+        self.assertEqual(old_user_update.email, 'user@example.com')
+
+    # -- DELETE ACCOUNT --
+    def test_account_delete_view_get(self):
+        old_user = User.objects.create_user(
+            username='user@example.com', 
+            password='your_password', 
+            first_name='User',
+            last_name='Name',
+            email='user@example.com'
+        )
+        self.client.login(username='user@example.com', password='your_password')
+
+        response = self.client.get(reverse('account_delete'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, APP_NAME + 'index.html')
