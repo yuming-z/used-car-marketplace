@@ -1,5 +1,5 @@
 from django.test import TestCase
-from django.urls import reverse
+from django.urls import reverse, NoReverseMatch
 from django.core import mail
 
 from django.contrib.auth.tokens import default_token_generator
@@ -31,11 +31,38 @@ class ViewsTest(TestCase):
         self.assertFalse(response.wsgi_request.user.is_authenticated)
         self.assertNotEqual(user, response.wsgi_request.user)
 
+    def test_logout_view_get_no_user(self):
+        '''
+        Test logging out as anonymous user
+        '''
+        response = self.client.get(reverse('logout'))
+
+        # check logout confirms anonymous user is logged in
+        self.assertTrue(response.wsgi_request.user.is_anonymous)
+        self.assertFalse(response.wsgi_request.user.is_authenticated)
+
     # -- LOGIN -- 
     def test_login_view_get(self):
         '''
         Test correct login get view
         '''
+        response = self.client.get(reverse('login'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, APP_NAME + 'login.html')
+
+    def test_login_view_get_logged_in(self):
+        '''
+        Test correct login get view when already logged in
+        '''
+        user = User.objects.create_user(
+            username='buyer@example.com', 
+            password='your_password', 
+            first_name='Buyer',
+            last_name='Name',
+            email='buyer@example.com'
+        )
+        self.client.login(username='buyer@example.com', password='your_password')
+
         response = self.client.get(reverse('login'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, APP_NAME + 'login.html')
@@ -72,6 +99,112 @@ class ViewsTest(TestCase):
         # check response is redirected
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('index'))
+    
+    def test_login_view_post_invalid_case(self): 
+        '''
+        Test correct login post with wrong email casing
+        '''    
+        old_user = User.objects.create_user(
+            username='user@example.com', 
+            password='your_password', 
+            first_name='User',
+            last_name='Name',
+            email='user@example.com'
+        )
+
+        response = self.client.post(reverse('login'), {
+            'email': 'uSeR@example.com',
+            'password': 'your_password',
+        })
+
+        # check user is not logged in
+        self.assertNotEqual(old_user, response.wsgi_request.user)
+        self.assertFalse(response.wsgi_request.user.is_authenticated)
+        self.assertNotEqual(response.wsgi_request.user.username, 'user@example.com')
+
+        # check form shows correct error
+        all_errors = response.context['login_form'].errors.get('__all__', [])
+        self.assertIn('Login failed. Please check your email and password.', all_errors)
+    
+    def test_login_view_post_invalid_missing_email(self): 
+        '''
+        Test correct login post with no email input
+        '''    
+        old_user = User.objects.create_user(
+            username='user@example.com', 
+            password='your_password', 
+            first_name='User',
+            last_name='Name',
+            email='user@example.com'
+        )
+
+        response = self.client.post(reverse('login'), {
+            'email': '',
+            'password': 'your_password',
+        })
+
+        # check user is not logged in
+        self.assertNotEqual(old_user, response.wsgi_request.user)
+        self.assertFalse(response.wsgi_request.user.is_authenticated)
+        self.assertNotEqual(response.wsgi_request.user.username, 'user@example.com')
+
+        # check form shows correct error
+        all_errors = response.context['login_form'].errors.get('__all__', [])
+        self.assertIn('Login failed. Please check your email and password.', all_errors)
+
+    def test_login_view_post_invalid_missing_password(self): 
+        '''
+        Test correct login post with no password input
+        '''    
+        old_user = User.objects.create_user(
+            username='user@example.com', 
+            password='your_password', 
+            first_name='User',
+            last_name='Name',
+            email='user@example.com'
+        )
+
+        response = self.client.post(reverse('login'), {
+            'email': 'user@example.com',
+            'password': '',
+        })
+
+        # check user is not logged in
+        self.assertNotEqual(old_user, response.wsgi_request.user)
+        self.assertFalse(response.wsgi_request.user.is_authenticated)
+        self.assertNotEqual(response.wsgi_request.user.username, 'user@example.com')
+
+        # check form shows correct error
+        all_errors = response.context['login_form'].errors.get('__all__', [])
+        self.assertIn('Login failed. Please check your email and password.', all_errors)
+    
+    def test_login_view_post_invalid_inactive_user(self): 
+        '''
+        Test correct login post with inactive user 
+        (user that has not activated with email)
+        '''    
+        old_user = User.objects.create_user(
+            username='user@example.com', 
+            password='your_password', 
+            first_name='User',
+            last_name='Name',
+            email='user@example.com',
+            is_active=False
+        )
+
+        response = self.client.post(reverse('login'), {
+            'email': 'user@example.com',
+            'password': 'your_password',
+        })
+
+        # check user is not logged in
+        self.assertNotEqual(old_user, response.wsgi_request.user)
+        self.assertFalse(response.wsgi_request.user.is_authenticated)
+        self.assertNotEqual(response.wsgi_request.user.username, 'user@example.com')
+
+        # check form shows correct error
+        all_errors = response.context['login_form'].errors.get('__all__', [])
+        self.assertIn('Login failed. Please check your email and password.', all_errors)
 
     def test_login_view_post_invalid_user(self):
         '''
@@ -92,7 +225,8 @@ class ViewsTest(TestCase):
 
     def test_login_view_post_invalid_password(self):
         '''
-        Test correct login post for invalid passowrd, where password is correctly written in.
+        Test correct login post for invalid passowrd, 
+        where password is correctly written in and user exists
         '''
         old_user = User.objects.create_user(
             username='user@example.com', 
@@ -125,7 +259,8 @@ class ViewsTest(TestCase):
             password='your_password', 
             first_name='User',
             last_name='Name',
-            email='user@example.com'
+            email='user@example.com',
+            is_active=False
         )
         old_user_number = User_Detail.objects.create(user=old_user, mobile='0411567980')
         uidb64 = urlsafe_base64_encode(bytes(str(old_user.pk), 'utf-8'))
@@ -135,6 +270,12 @@ class ViewsTest(TestCase):
 
         # check valid activation token moves to index page
         self.assertEqual(response.status_code, 301)
+
+        # check user logged in now
+        response = self.client.get(reverse('login'))
+        self.assertFalse(response.wsgi_request.user.is_anonymous)
+        self.assertTrue(response.wsgi_request.user.is_authenticated)
+        self.assertEqual(old_user, response.wsgi_request.user)
 
         # check user is active now
         updated_user = User.objects.get(pk=old_user.pk)
@@ -153,6 +294,46 @@ class ViewsTest(TestCase):
         # check redirections to error page
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('invalid_activation'))
+    
+    def test_activate_view_missing_token(self):
+        '''
+        Test invalid activation token for signup for missing token part
+        '''
+        old_user = User.objects.create_user(
+            username='user@example.com', 
+            password='your_password', 
+            first_name='User',
+            last_name='Name',
+            email='user@example.com',
+            is_active=False
+        )
+        uidb64 = urlsafe_base64_encode(bytes(str(old_user.pk), 'utf-8'))
+        with self.assertRaises(NoReverseMatch):
+            response = self.client.get(reverse('activate', args=[uidb64]))
+
+            # check redirections to error page
+            self.assertEqual(response.status_code, 302)
+            self.assertRedirects(response, reverse('invalid_activation'))
+
+    def test_activate_view_missing_uidb64(self):
+        '''
+        Test invalid activation token for signup for missing token part
+        '''
+        old_user = User.objects.create_user(
+            username='user@example.com', 
+            password='your_password', 
+            first_name='User',
+            last_name='Name',
+            email='user@example.com',
+            is_active=False
+        )
+        token = account_activation_token.make_token(old_user)
+        with self.assertRaises(NoReverseMatch):
+            response = self.client.get(reverse('activate', args=[token]))
+
+            # check redirections to error page
+            self.assertEqual(response.status_code, 302)
+            self.assertRedirects(response, reverse('invalid_activation'))
 
     # -- SIGNUP -- 
     def test_signup_view_get(self):
@@ -192,9 +373,171 @@ class ViewsTest(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual('Activate Your Carsales Account', mail.outbox[0].subject)
 
+    def test_signup_view_post_invalid_email(self):
+        '''
+        Test post signup with invalid email response
+        '''
+        user_count_before = User.objects.count()
+        response = self.client.post(reverse('signup'), {
+            'email': 'user',
+            'first_name': 'User',
+            'last_name': 'Name',
+            'password1': 'your_password',
+            'password2': 'your_password',
+            'number': '0411567980',
+        }) 
+
+        # check user count has not increased in database
+        self.assertEqual(User.objects.count(), user_count_before)
+        self.assertEqual(User_Detail.objects.count(), user_count_before)
+
+        # check no email was sent
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_signup_view_post_invalid_password_match(self):
+        '''
+        Test post signup with invalid password match response
+        '''
+        user_count_before = User.objects.count()
+        response = self.client.post(reverse('signup'), {
+            'email': 'user@example.com',
+            'first_name': 'User',
+            'last_name': 'Name',
+            'password1': 'your_password123',
+            'password2': 'your_password',
+            'number': '0498987654',
+        }) 
+
+        # check user count has not increased in database
+        self.assertEqual(User.objects.count(), user_count_before)
+        self.assertEqual(User_Detail.objects.count(), user_count_before)
+
+        # check no email was sent
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_signup_view_post_missing_email(self):
+        '''
+        Test post signup with missing argument
+        '''
+        user_count_before = User.objects.count()
+        response = self.client.post(reverse('signup'), {
+            'first_name': 'User',
+            'last_name': 'Name',
+            'password1': 'your_password123',
+            'password2': 'your_password',
+            'number': '0498987654',
+        }) 
+
+        # check user count has not increased in database
+        self.assertEqual(User.objects.count(), user_count_before)
+        self.assertEqual(User_Detail.objects.count(), user_count_before)
+
+        # check no email was sent
+        self.assertEqual(len(mail.outbox), 0)
+    
+    def test_signup_view_post_missing_first_name(self):
+        '''
+        Test post signup with missing argument
+        '''
+        user_count_before = User.objects.count()
+        response = self.client.post(reverse('signup'), {
+            'email': 'user@example.com',
+            'last_name': 'Name',
+            'password1': 'your_password123',
+            'password2': 'your_password',
+            'number': '0498987654',
+        }) 
+
+        # check user count has not increased in database
+        self.assertEqual(User.objects.count(), user_count_before)
+        self.assertEqual(User_Detail.objects.count(), user_count_before)
+
+        # check no email was sent
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_signup_view_post_missing_last_name(self):
+        '''
+        Test post signup with missing argument
+        '''
+        user_count_before = User.objects.count()
+        response = self.client.post(reverse('signup'), {
+            'email': 'user@example.com',
+            'first_name': 'User',
+            'password1': 'your_password123',
+            'password2': 'your_password',
+            'number': '0498987654',
+        }) 
+
+        # check user count has not increased in database
+        self.assertEqual(User.objects.count(), user_count_before)
+        self.assertEqual(User_Detail.objects.count(), user_count_before)
+
+        # check no email was sent
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_signup_view_post_missing_password1(self):
+        '''
+        Test post signup with missing argument
+        '''
+        user_count_before = User.objects.count()
+        response = self.client.post(reverse('signup'), {
+            'email': 'user@example.com',
+            'first_name': 'User',
+            'last_name': 'Name',
+            'password2': 'your_password',
+            'number': '0498987654',
+        }) 
+
+        # check user count has not increased in database
+        self.assertEqual(User.objects.count(), user_count_before)
+        self.assertEqual(User_Detail.objects.count(), user_count_before)
+
+        # check no email was sent
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_signup_view_post_missing_password2(self):
+        '''
+        Test post signup with missing argument
+        '''
+        user_count_before = User.objects.count()
+        response = self.client.post(reverse('signup'), {
+            'email': 'user@example.com',
+            'first_name': 'User',
+            'last_name': 'Name',
+            'password1': 'your_password',
+            'number': '0498987654',
+        }) 
+
+        # check user count has not increased in database
+        self.assertEqual(User.objects.count(), user_count_before)
+        self.assertEqual(User_Detail.objects.count(), user_count_before)
+
+        # check no email was sent
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_signup_view_post_missing_number(self):
+        '''
+        Test post signup with missing argument
+        '''
+        user_count_before = User.objects.count()
+        response = self.client.post(reverse('signup'), {
+            'email': 'user@example.com',
+            'first_name': 'User',
+            'last_name': 'Name',
+            'password1': 'your_password',
+            'password2': 'your_password',
+        }) 
+
+        # check user count has not increased in database
+        self.assertEqual(User.objects.count(), user_count_before)
+        self.assertEqual(User_Detail.objects.count(), user_count_before)
+
+        # check no email was sent
+        self.assertEqual(len(mail.outbox), 0)
+
     def test_signup_view_post_invalid(self):
         '''
-        Test post signup with invalid response
+        Test post signup with invalid empty response
         '''
         user_count_before = User.objects.count()
         response = self.client.post(reverse('signup'), {}) 
@@ -244,7 +587,7 @@ class ViewsTest(TestCase):
         all_errors = response.context['signup_form'].errors.get('__all__', [])
         self.assertIn('Signup failed. Phone Number already exists.', all_errors)
 
-    def test_signup_view_post_invalid_email(self):
+    def test_signup_view_post_invalid_email_response(self):
         '''
         Test post signup for existing email response
         '''
@@ -282,7 +625,7 @@ class ViewsTest(TestCase):
         all_errors = response.context['signup_form'].errors.get('__all__', [])
         self.assertIn('Signup failed. Email already exists.', all_errors)
 
-    # -- FORGOT PASSWORD -- 
+    # -- FORGOT/RESET PASSWORD -- 
     def test_forgotpassword_view_get(self):
         '''
         Test get forgot password view
@@ -328,6 +671,16 @@ class ViewsTest(TestCase):
         # check redirection
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('reset_email_sent'))
+
+        # check no email has been sent
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_forgotpassword_view_post_missing(self):
+        '''
+        Test invalid post forgot password for missing arguments
+        '''
+        response = self.client.post(reverse('forgotpassword'), {
+        })
 
         # check no email has been sent
         self.assertEqual(len(mail.outbox), 0)
@@ -396,6 +749,88 @@ class ViewsTest(TestCase):
         all_errors = response.context['reset_form'].errors.get('__all__', [])
         self.assertIn('Passwords do not match', all_errors)
 
+    def test_resetpassword_view_post_missing_password1(self):
+        '''
+        Test invalid get reset password for missing argument
+        '''
+        old_user = User.objects.create_user(
+            username='user@example.com', 
+            password='your_password', 
+            first_name='User',
+            last_name='Name',
+            email='user@example.com'
+        )
+        uidb64 = urlsafe_base64_encode(bytes(str(old_user.pk), 'utf-8'))
+        token = default_token_generator.make_token(old_user)
+
+        response = self.client.post(reverse('reset_password', args=[uidb64, token]), {
+            'password2': 'new_password3',
+        })
+
+        # check password has not changed
+        updated_user = User.objects.get(pk=old_user.pk)
+        self.assertTrue(updated_user.check_password('your_password'))
+
+    def test_resetpassword_view_post_missing_password2(self):
+        '''
+        Test invalid get reset password for missing argument
+        '''
+        old_user = User.objects.create_user(
+            username='user@example.com', 
+            password='your_password', 
+            first_name='User',
+            last_name='Name',
+            email='user@example.com'
+        )
+        uidb64 = urlsafe_base64_encode(bytes(str(old_user.pk), 'utf-8'))
+        token = default_token_generator.make_token(old_user)
+
+        response = self.client.post(reverse('reset_password', args=[uidb64, token]), {
+            'password1': 'new_password3',
+        })
+
+        # check password has not changed
+        updated_user = User.objects.get(pk=old_user.pk)
+        self.assertTrue(updated_user.check_password('your_password'))
+
+    def test_resetpassword_view_post_missing_uidb64(self):
+        '''
+        Test invalid get reset password for missing token part
+        '''
+        old_user = User.objects.create_user(
+            username='user@example.com', 
+            password='your_password', 
+            first_name='User',
+            last_name='Name',
+            email='user@example.com'
+        )
+        token = default_token_generator.make_token(old_user)
+
+        with self.assertRaises(NoReverseMatch):
+            response = self.client.post(reverse('reset_password', args=[token]), {
+                'password1': 'new_password3',
+                'password2': 'new_password3',
+            })
+
+    def test_resetpassword_view_post_missing_token(self):
+        '''
+        Test invalid get reset password for missing token part
+        '''
+        old_user = User.objects.create_user(
+            username='user@example.com', 
+            password='your_password', 
+            first_name='User',
+            last_name='Name',
+            email='user@example.com'
+        )
+        uidb64 = urlsafe_base64_encode(bytes(str(old_user.pk), 'utf-8'))
+
+        with self.assertRaises(NoReverseMatch):
+            response = self.client.post(reverse('reset_password', args=[uidb64]), {
+                'password1': 'new_password3',
+                'password2': 'new_password3',
+            })
+
     def test_resetpassword_view_post_invaid_existing(self):
         '''
         Test invalid get reset password for pre-existing password
@@ -423,7 +858,7 @@ class ViewsTest(TestCase):
         all_errors = response.context['reset_form'].errors.get('__all__', [])
         self.assertIn('Password cannot be the same as your last password', all_errors)
 
-    def test_resetpassword_view_post_invaid_token(self):
+    def test_resetpassword_view_post_invalid_token(self):
         '''
         Test invalid get reset password for invalid token
         '''
@@ -551,24 +986,6 @@ class ViewsTest(TestCase):
         seller_rating = Seller_Rating.objects.get(seller=seller_user, buyer=buyer_user)
         self.assertEqual(seller_rating.rating, 5)
         self.assertEqual(seller_rating.comment, 'Test comment')
-
-    # def test_rate_seller_view_post_invalid_same(self):
-    #     seller_user = User.objects.create_user(
-    #         username='seller@example.com', 
-    #         password='your_password', 
-    #         first_name='Seller',
-    #         last_name='Name',
-    #         email='seller@example.com'
-    #     )
-    #     self.client.login(username='seller@example.com', password='your_password')
-
-    #     response = self.client.post(reverse('rating_seller', args=[seller_user.id]), {
-    #         'rating': 5,
-    #         'comments': 'Test comment',
-    #     })
-
-    #     self.assertEqual(response.status_code, 302)
-    #     self.assertRedirects(response, reverse('error_page'))
         
     def test_rate_seller_view_post_invalid_seller(self):
         '''
@@ -670,24 +1087,6 @@ class ViewsTest(TestCase):
         buyer_rating = Buyer_Rating.objects.get(seller=seller_user, buyer=buyer_user)
         self.assertEqual(buyer_rating.rating, 5)
         self.assertEqual(buyer_rating.comment, 'Test comment')
-
-    # def test_rate_buyer_view_post_invalid_same(self):
-    #     seller_user = User.objects.create_user(
-    #         username='seller@example.com', 
-    #         password='your_password', 
-    #         first_name='Seller',
-    #         last_name='Name',
-    #         email='seller@example.com'
-    #     )
-    #     self.client.login(username='seller@example.com', password='your_password')
-
-    #     response = self.client.post(reverse('rating_seller', args=[seller_user.id]), {
-    #         'rating': 5,
-    #         'comments': 'Test comment',
-    #     })
-
-    #     self.assertEqual(response.status_code, 302)
-    #     self.assertRedirects(response, reverse('error_page'))
         
     def test_rate_buyer_view_post_invalid_buyer(self):
         '''

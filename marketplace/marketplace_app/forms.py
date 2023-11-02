@@ -198,13 +198,13 @@ class User_DetailUpdateForm(forms.ModelForm):
         fields = ['city_address']
 
         
-class ListingForm(forms.ModelForm):
-    class Meta:
-        model = Listing
-        fields = ['title', 'description', 'price', 'status']
-        labels = {
-            'title': 'Listing Title',
-            'description': 'Listing Description',
-            'price': 'Listing Price',
-            'status': 'Listing Status',
-        }
+# class ListingForm(forms.ModelForm):
+#     class Meta:
+#         model = Listing
+#         fields = ['title', 'description', 'price', 'status']
+#         labels = {
+#             'title': 'Listing Title',
+#             'description': 'Listing Description',
+#             'price': 'Listing Price',
+#             'status': 'Listing Status',
+#         }

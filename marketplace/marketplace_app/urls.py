@@ -45,9 +45,9 @@ urlpatterns = [
     path('car_listing/<int:car_id>/', views.car_listing_view, name='car_listing'),
     
     #edit lists
-    path('create_listing/', views.create_listing, name='create_listing'),
-    path('edit_listing/<int:listing_id>/', views.edit_listing, name='edit_listing'),
-    path('delete_listing/<int:listing_id>/', views.delete_listing, name='delete_listing'),
-    path('listing_detail/<int:listing_id>/', views.listing_detail, name='listing_detail'),
+    # path('create_listing/', views.create_listing, name='create_listing'),
+    # path('edit_listing/<int:listing_id>/', views.edit_listing, name='edit_listing'),
+    # path('delete_listing/<int:listing_id>/', views.delete_listing, name='delete_listing'),
+    # path('listing_detail/<int:listing_id>/', views.listing_detail, name='listing_detail'),
 ]
 
