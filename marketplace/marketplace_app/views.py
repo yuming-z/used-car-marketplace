@@ -358,9 +358,7 @@ def account_delete(request):
     if request.method == "POST":
         request.user.delete()
         logout(request)
-
-        return redirect('index.html') 
-
+        return redirect('/')
     # If it's a GET request, render a confirmation page
     return render(request, APP_NAME + 'index.html')
 
