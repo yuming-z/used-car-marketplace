@@ -42,24 +42,22 @@
 </style>
 
 <div class="wrap_content"> 
-  <!-- <h2>Account Details</h2>
-  <p><strong>Username:</strong> {{ user.username }}</p>
-  <p><strong>Email:</strong> {{ user.email }}</p>
-  <p><strong>Mobile:</strong> {{ user.user_detail.mobile }}</p> -->
   <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <fieldset class="form_group">
-      <legend class="border-botton mb-4">Account Info</legend>
+      <legend class="border-bottom mb-4">Account Info</legend>
       {{u_form|crispy}}
       {{ud_form|crispy}}
     </fieldset>
     <div class="buttons-container">
       <button class="btn btn-primary btn-enhanced" type="submit">Update</button>
-      <form method="POST" action="{% url 'account_delete' %}" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
-        {% csrf_token %}
-        <button class="btn btn-danger btn-enhanced" type="submit">Delete</button>
-      </form>
     </div>
+  </form>
+  <div class="buttons-container">
+    <form method="POST" action="{% url 'account_delete' %}" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
+      {% csrf_token %}
+      <button class="btn btn-danger btn-enhanced" type="submit">Delete</button>
+    </form>
   </div>
 </div>
 {% endblock %}
