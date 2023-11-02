@@ -80,9 +80,9 @@ WSGI_APPLICATION = 'marketplace.wsgi.application'
 # Email confirmation ( with email confirmation )
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+EMAIL_HOST = env('EMAIL_HOST')
+EMAIL_PORT = env('EMAIL_PORT')
+EMAIL_USE_TLS = env('EMAIL_USE_TLS')
 EMAIL_HOST_USER = env('EMAIL_NAME')
 EMAIL_HOST_PASSWORD = env('EMAIL_PASSWORD')
 PASSWORD_RESET_TIMEOUT = 60 * 60
