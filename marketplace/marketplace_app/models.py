@@ -25,6 +25,7 @@ class User_Detail(models.Model):
     email_confirmed = models.BooleanField(default=False)
     city_address = models.CharField(max_length=255,blank=True, null=True)
 
+
     # def clean(self) -> None:
     #     '''
     #     The function to check if the mobile number is valid.
@@ -37,9 +38,9 @@ class User_Detail(models.Model):
     #         if len(mobile_string) != 10:
     #             raise ValidationError(_("The mobile number should have 10 numbers."))
             
-    #         if not mobile_string.startswith("04"):
-    #             # ref: https://www.australia.gov.au/telephone-country-and-area-codes
-    #             raise ValidationError(_("The mobile number is invalid."))
+            # if not mobile_string.startswith("04"):
+            #     # ref: https://www.australia.gov.au/telephone-country-and-area-codes
+            #     raise ValidationError(_("The mobile number is invalid."))
             
 # define a natural key for car brand 
 # to be better referenced as a foreign key

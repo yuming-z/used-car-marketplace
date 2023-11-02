@@ -24,8 +24,9 @@ class ViewsTest(TestCase):
             email='buyer@example.com'
         )
         self.client.login(username='buyer@example.com', password='your_password')
-        
         response = self.client.get(reverse('logout'))
+
+        # check logout confirms anonymous user is logged in
         self.assertTrue(response.wsgi_request.user.is_anonymous)
         self.assertFalse(response.wsgi_request.user.is_authenticated)
         self.assertNotEqual(user, response.wsgi_request.user)
@@ -165,6 +166,9 @@ class ViewsTest(TestCase):
         self.assertTemplateUsed(response, APP_NAME + 'signup.html')
 
     def test_signup_view_post_valid(self):
+        '''
+        Test correct signup post view with valid response
+        '''
         user_count_before = User.objects.count()
         response = self.client.post(reverse('signup'), {
             'email': 'user@example.com',
@@ -175,23 +179,37 @@ class ViewsTest(TestCase):
             'number': '0411567980',
         })
 
+        # check correct redirection
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('activate_email_sent'))
+
+        # check user is added to database
         self.assertEqual(User.objects.count(), user_count_before + 1)
         self.assertFalse(User.objects.get(username='user@example.com').is_active)
         self.assertEqual(User_Detail.objects.count(), user_count_before + 1)
 
+        # check email is sent for activating carsales account
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual('Activate Your Carsales Account', mail.outbox[0].subject)
 
     def test_signup_view_post_invalid(self):
+        '''
+        Test post signup with invalid response
+        '''
         user_count_before = User.objects.count()
         response = self.client.post(reverse('signup'), {}) 
+
+        # check user count has not increased in database
         self.assertEqual(User.objects.count(), user_count_before)
         self.assertEqual(User_Detail.objects.count(), user_count_before)
+
+        # check no email was sent
         self.assertEqual(len(mail.outbox), 0)
 
     def test_signup_view_post_invalid_number(self):
+        '''
+        Test post signup with existing mobile number response
+        '''
         user_count_before = User.objects.count()
         old_user = User.objects.create_user(
             email='user@example.com',
@@ -201,6 +219,8 @@ class ViewsTest(TestCase):
             password='your_password'
         )
         old_user_number = User_Detail.objects.create(user=old_user, mobile='0411567980')
+
+        # check the created user is in the database
         self.assertEqual(User.objects.count(), user_count_before + 1)
         self.assertEqual(User_Detail.objects.count(), user_count_before + 1)
 
@@ -212,14 +232,22 @@ class ViewsTest(TestCase):
             'password2': 'your_password',
             'number': '0411567980',
         })
+
+        # check user count did not increase in database (because of existing number)
         self.assertEqual(User.objects.count(), user_count_before + 1)
         self.assertEqual(User_Detail.objects.count(), user_count_before + 1)
+
+        # check no email was sent
         self.assertEqual(len(mail.outbox), 0)
         
+        # check for error in form
         all_errors = response.context['signup_form'].errors.get('__all__', [])
         self.assertIn('Signup failed. Phone Number already exists.', all_errors)
 
     def test_signup_view_post_invalid_email(self):
+        '''
+        Test post signup for existing email response
+        '''
         user_count_before = User.objects.count()
         old_user = User.objects.create(
             email='user@example.com',
@@ -229,6 +257,8 @@ class ViewsTest(TestCase):
             password='your_password'
         )
         old_user_number = User_Detail.objects.create(user=old_user, mobile='0411567980')
+
+        # check the created user is in the database
         self.assertEqual(User.objects.count(), user_count_before + 1)
         self.assertEqual(User_Detail.objects.count(), user_count_before + 1)
 
@@ -240,20 +270,33 @@ class ViewsTest(TestCase):
             'password2': 'your_password',
             'number': '0411567989',
         })
+
+        # check user count did not increase in database (because of existing email)
         self.assertEqual(User.objects.count(), user_count_before + 1)
         self.assertEqual(User_Detail.objects.count(), user_count_before + 1)
+
+        # check no email was sent
         self.assertEqual(len(mail.outbox), 0)
         
+        # check for error in form
         all_errors = response.context['signup_form'].errors.get('__all__', [])
         self.assertIn('Signup failed. Email already exists.', all_errors)
 
     # -- FORGOT PASSWORD -- 
     def test_forgotpassword_view_get(self):
+        '''
+        Test get forgot password view
+        '''
         response = self.client.get(reverse('forgotpassword'))
+
+        # check template and status code
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, APP_NAME + 'forgotpassword.html')
 
     def test_forgotpassword_view_post_valid(self):
+        '''
+        Test valid post forgot password
+        '''
         old_user = User.objects.create_user(
             username='user@example.com', 
             password='your_password', 
@@ -266,28 +309,43 @@ class ViewsTest(TestCase):
             'email': 'user@example.com',
         })
 
+        # check redirection
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('reset_email_sent'))
 
+        # check email has been sent for resetting account password
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual('Reset Your Carsales Account Password', mail.outbox[0].subject)
 
     def test_forgotpassword_view_post_invalid(self):
+        '''
+        Test invalid post forgot password for non-existent user
+        '''
         response = self.client.post(reverse('forgotpassword'), {
             'email': 'wrong@example.com', 
         })
 
+        # check redirection
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('reset_email_sent'))
 
+        # check no email has been sent
         self.assertEqual(len(mail.outbox), 0)
 
     def test_resetpassword_view_get(self):
+        '''
+        Test valid get reset password
+        '''
         response = self.client.get(reverse('reset_password', args=['uidb64', 'token']))
+        
+        # check status code and template
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, APP_NAME + 'reset_password.html')
 
     def test_resetpassword_view_post_valid(self):
+        '''
+        Test valid post reset password
+        '''
         old_user = User.objects.create_user(
             username='user@example.com', 
             password='your_password', 
@@ -303,13 +361,18 @@ class ViewsTest(TestCase):
             'password2': 'new_password123',
         })
 
+        # check redirection
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('login'))
 
+        # check password was updated correctly
         updated_user = User.objects.get(pk=old_user.pk)
         self.assertTrue(updated_user.check_password('new_password123'))
 
     def test_resetpassword_view_post_invalid_match(self):
+        '''
+        Test invalid get reset password for mismatching password
+        '''
         old_user = User.objects.create_user(
             username='user@example.com', 
             password='your_password', 
@@ -325,13 +388,18 @@ class ViewsTest(TestCase):
             'password2': 'new_password3',
         })
 
+        # check password has not changed
         updated_user = User.objects.get(pk=old_user.pk)
         self.assertTrue(updated_user.check_password('your_password'))
 
+        # check error in form
         all_errors = response.context['reset_form'].errors.get('__all__', [])
         self.assertIn('Passwords do not match', all_errors)
 
     def test_resetpassword_view_post_invaid_existing(self):
+        '''
+        Test invalid get reset password for pre-existing password
+        '''
         old_user = User.objects.create_user(
             username='user@example.com', 
             password='your_password', 
@@ -347,13 +415,18 @@ class ViewsTest(TestCase):
             'password2': 'your_password',
         })
 
+        # check password has not changed
         updated_user = User.objects.get(pk=old_user.pk)
         self.assertTrue(updated_user.check_password('your_password'))
 
+        # check error in form
         all_errors = response.context['reset_form'].errors.get('__all__', [])
         self.assertIn('Password cannot be the same as your last password', all_errors)
 
     def test_resetpassword_view_post_invaid_token(self):
+        '''
+        Test invalid get reset password for invalid token
+        '''
         old_user = User.objects.create(
             username='user@example.com', 
             password='your_password', 
@@ -369,11 +442,15 @@ class ViewsTest(TestCase):
             'password2': 'new_password123',
         })
 
+        # check redirection
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('invalid_reset'))
 
     # -- GET VIEWS --
     def test_car_listing_view_get_valid(self):
+        '''
+        Test get car listing
+        '''
         car_brand = Car_Brand.objects.create(name='Test Brand')
         car_model = Car_Model.objects.create(brand=car_brand, name='Test Model')
         fuel_type = Fuel_Type.objects.create(name='Petrol')
@@ -404,21 +481,31 @@ class ViewsTest(TestCase):
 
         response = self.client.get(reverse('car_listing', args=[test_car.id]))
 
+        # check template, status code and correct showing car
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, APP_NAME + 'car_listing.html')
         self.assertEqual(response.context['car'], test_car)
 
     def test_car_listing_view_get_invalid(self):
+        '''
+        Test invalid get car listing
+        '''
         response = self.client.get(reverse('car_listing', args=[999]))
         self.assertTemplateUsed(response, APP_NAME + 'error_page.html')
 
     def test_car_listings_view_get_valid(self):
+        '''
+        Test get car listings
+        '''
         response = self.client.get(reverse('car_listings'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, APP_NAME + 'car_listings.html')
 
     # -- SELLER RATINGS --
     def test_rate_seller_view_get_valid(self):
+        '''
+        Test rating seller get view
+        '''
         seller_user = User.objects.create(
             username='seller@example.com', 
             password='your_password', 
@@ -432,6 +519,9 @@ class ViewsTest(TestCase):
         self.assertTemplateUsed(response, APP_NAME + 'rating_seller.html')
 
     def test_rate_seller_view_post_valid(self):
+        '''
+        Test valid rating seller post
+        '''
         seller_user = User.objects.create_user(
             username='seller@example.com', 
             password='your_password', 
@@ -448,15 +538,16 @@ class ViewsTest(TestCase):
         )
 
         self.client.login(username='buyer@example.com', password='your_password')
-
         response = self.client.post(reverse('rating_seller', args=[seller_user.id]), {
             'rating': 5,
             'comments': 'Test comment',
         })
 
+        # check redirection
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('confirm_rating'))
 
+        # check seller rating object was created successfully
         seller_rating = Seller_Rating.objects.get(seller=seller_user, buyer=buyer_user)
         self.assertEqual(seller_rating.rating, 5)
         self.assertEqual(seller_rating.comment, 'Test comment')
@@ -480,6 +571,9 @@ class ViewsTest(TestCase):
     #     self.assertRedirects(response, reverse('error_page'))
         
     def test_rate_seller_view_post_invalid_seller(self):
+        '''
+        Test invalid rating seller post for unknown seller
+        '''
         buyer_user = User.objects.create_user(
             username='buyer@example.com', 
             password='your_password', 
@@ -494,10 +588,14 @@ class ViewsTest(TestCase):
             'comments': 'Test comment',
         })
 
+        # check redirection to error page
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('error_page'))
 
     def test_rate_seller_view_get_invalid_same(self):
+        '''
+        Test invalid rating seller post for rating same user
+        '''
         buyer_user = User.objects.create_user(
             username='buyer@example.com', 
             password='your_password', 
@@ -508,10 +606,14 @@ class ViewsTest(TestCase):
         self.client.login(username='buyer@example.com', password='your_password')
         response = self.client.get(reverse('rating_seller', args=[buyer_user.id]))
 
+        # check redirection to error page
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('error_page'))
     
     def test_rate_seller_view_get_invalid_seller(self):
+        '''
+        Test invalid rating seller get for non-existent seller
+        '''
         response = self.client.get(reverse('rating_seller', args=[999]))
 
         self.assertEqual(response.status_code, 302)
@@ -519,6 +621,9 @@ class ViewsTest(TestCase):
 
     # -- BUYER RATINGS --
     def test_rate_buyer_view_get_valid(self):
+        '''
+        Test valid rating buyer get
+        '''
         seller_user = User.objects.create(
             username='seller@example.com', 
             password='your_password', 
@@ -532,6 +637,9 @@ class ViewsTest(TestCase):
         self.assertTemplateUsed(response, APP_NAME + 'rating_buyer.html')
 
     def test_rate_buyer_view_post_valid(self):
+        '''
+        Test valid rating buyer post
+        '''
         seller_user = User.objects.create_user(
             username='seller@example.com', 
             password='your_password', 
@@ -554,9 +662,11 @@ class ViewsTest(TestCase):
             'comments': 'Test comment',
         })
 
+        # check redirection
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('confirm_rating'))
 
+        # check buyer rating object created succesfully
         buyer_rating = Buyer_Rating.objects.get(seller=seller_user, buyer=buyer_user)
         self.assertEqual(buyer_rating.rating, 5)
         self.assertEqual(buyer_rating.comment, 'Test comment')
@@ -579,7 +689,10 @@ class ViewsTest(TestCase):
     #     self.assertEqual(response.status_code, 302)
     #     self.assertRedirects(response, reverse('error_page'))
         
-    def test_rate_buyer_view_post_invalid_seller(self):
+    def test_rate_buyer_view_post_invalid_buyer(self):
+        '''
+        Test invalid rating buyer post for non-existent buyer
+        '''
         seller_user = User.objects.create_user(
             username='seller@example.com', 
             password='your_password', 
@@ -594,10 +707,14 @@ class ViewsTest(TestCase):
             'comments': 'Test comment',
         })
 
+        # check redirection to error page
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('error_page'))
 
     def test_rate_buyer_view_get_invalid_same(self):
+        '''
+        Test invalid rating buyer post for same buyer
+        '''
         user = User.objects.create_user(
             username='buyer@example.com', 
             password='your_password', 
@@ -608,10 +725,14 @@ class ViewsTest(TestCase):
         self.client.login(username='buyer@example.com', password='your_password')
         response = self.client.get(reverse('rating_buyer', args=[user.id]))
 
+        # check redirection to error page
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('error_page'))
     
     def test_rate_buyer_view_get_invalid_seller(self):
+        '''
+        Test invalid rating buyer get for non-existent buyer
+        '''
         response = self.client.get(reverse('rating_buyer', args=[999]))
 
         self.assertEqual(response.status_code, 302)
@@ -619,6 +740,9 @@ class ViewsTest(TestCase):
 
     # -- UPDATE ACCOUNT --
     def test_account_detail_view_get_valid(self):
+        '''
+        Test valid account detail get
+        '''
         old_user = User.objects.create_user(
             username='user@example.com', 
             password='your_password', 
@@ -629,11 +753,15 @@ class ViewsTest(TestCase):
         old_user_number = User_Detail.objects.create(user=old_user, mobile='0411567980')
         self.client.login(username='user@example.com', password='your_password')
 
+        # check status code and template
         response = self.client.get(reverse('account_detail'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, APP_NAME + 'account_detail.html')
 
     def test_account_detail_view_post_valid(self):
+        '''
+        Test valid account detail post
+        '''
         old_user = User.objects.create_user(
             username='user@example.com', 
             password='your_password', 
@@ -651,9 +779,11 @@ class ViewsTest(TestCase):
             'city_address': 'Sydney',
         })
 
+        # check redirection
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('account_detail'))
 
+        # check account details are updated in database correctly
         old_user_update = User.objects.get(username='user@example.com')
         self.assertEqual(old_user_update.first_name, 'Updated')
         self.assertEqual(old_user_update.last_name, 'Name')
@@ -661,6 +791,9 @@ class ViewsTest(TestCase):
 
     # -- DELETE ACCOUNT --
     def test_account_delete_view_get(self):
+        '''
+        Test valid delete account get
+        '''
         old_user = User.objects.create_user(
             username='user@example.com', 
             password='your_password', 
@@ -672,5 +805,6 @@ class ViewsTest(TestCase):
 
         response = self.client.get(reverse('account_delete'))
 
+        # check status code and template
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, APP_NAME + 'index.html')
