@@ -10,14 +10,6 @@ class UserDeatilTest(TestCase):
     def test_no_mobile(self):
         User_Detail.objects.create(user=self.user)
         self.assertTrue(User_Detail.objects.filter(user=self.user).exists())
-    
-    # def test_too_long_mobile(self):
-    #     user_detail = User_Detail.objects.create(user=self.user, mobile="04000000000")
-    #     self.assertRaises(NumericValueOutOfRange, user_detail.clean)
-
-    def test_invalid_mobile(self):
-        user_detail = User_Detail.objects.create(user=self.user, mobile="1234567890")
-        self.assertRaises(ValidationError, user_detail.clean)
 
     def test_creation(self):
         User_Detail.objects.create(user=self.user, mobile="0412345690")

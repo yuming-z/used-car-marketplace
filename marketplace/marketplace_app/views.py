@@ -93,7 +93,7 @@ def activate(request, uidb64, token):
 
         login(request, user)
         print("User is logged in "+user.username)
-        return redirect('index')
+        return redirect('index', permanent=True)
     else:
         return redirect('invalid_activation')
 

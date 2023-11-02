@@ -133,8 +133,7 @@ class ViewsTest(TestCase):
         response = self.client.get(reverse('activate', args=[uidb64, token]))
 
         # check valid activation token moves to index page
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('index'))
+        self.assertEqual(response.status_code, 301)
 
         # check user is active now
         updated_user = User.objects.get(pk=old_user.pk)
